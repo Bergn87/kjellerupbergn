@@ -72,6 +72,7 @@ export default async function EmbedPage({ params, searchParams }: PageProps) {
       <QuoteCalculator
         tenantId={tenant.id}
         calculatorId={calculator?.id ?? ''}
+        calculatorType={(calculator?.type as import('@/lib/calculators/types').CalculatorType) ?? 'tagrens'}
         priceConfig={priceConfig}
         primaryColor={primaryColor}
       />

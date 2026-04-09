@@ -1,69 +1,35 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { z } from 'zod/v4'
-import { calculateTagrensPrice, DEFAULT_TAGRENS_PRICE_CONFIG } from '@/lib/calculators/tagrens'
-import type { TagrensPriceConfig, TagrensHouseDetails, TagrensExtraDetails } from '@/lib/calculators/types'
 import { createClient } from '@/lib/supabase/server'
+import { getCalculatorConfig, getDefaultPriceConfig } from '@/lib/calculators/registry'
+import type { CalculatorType, AnyPriceConfig } from '@/lib/calculators/types'
 
 // ============================================
-// VALIDATION
+// CONFIG CACHE (60 sek)
 // ============================================
 
-const houseDetailsSchema = z.object({
-  tagType: z.string().min(1),
-  boligAreal: z.number().positive(),
-  tagFladeareal: z.number().positive(),
-  tagHaeldning: z.number().min(0).max(90),
-  bygningsHoejde: z.number().min(0),
-})
+const configCache = new Map<string, { config: AnyPriceConfig; type: CalculatorType; expiresAt: number }>()
 
-const extraDetailsSchema = z.object({
-  oenskerMaling: z.boolean(),
-  antalOvenlysvinduer: z.number().int().min(0),
-  antalTagkviste: z.number().int().min(0),
-  harTagrender: z.boolean(),
-  harSkjulteTagrender: z.boolean(),
-  harSolceller: z.boolean(),
-})
-
-const calculateRequestSchema = z.object({
-  calculatorId: z.string().uuid().optional(),
-  houseDetails: houseDetailsSchema,
-  extraDetails: extraDetailsSchema,
-})
-
-// ============================================
-// CACHE for price_config (60 sek)
-// ============================================
-
-const configCache = new Map<string, { config: TagrensPriceConfig; expiresAt: number }>()
-
-async function getPriceConfig(calculatorId?: string): Promise<TagrensPriceConfig> {
-  if (!calculatorId) return DEFAULT_TAGRENS_PRICE_CONFIG
-
-  // Check cache
+async function getCalculatorById(calculatorId: string): Promise<{ config: AnyPriceConfig; type: CalculatorType }> {
   const cached = configCache.get(calculatorId)
   if (cached && Date.now() < cached.expiresAt) {
-    return cached.config
+    return { config: cached.config, type: cached.type }
   }
 
-  // Hent fra Supabase
   const supabase = await createClient()
   const { data } = await supabase
     .from('calculators')
-    .select('price_config')
+    .select('type, price_config')
     .eq('id', calculatorId)
     .eq('is_active', true)
-    .single<{ price_config: TagrensPriceConfig }>()
+    .single<{ type: CalculatorType; price_config: AnyPriceConfig }>()
 
-  const config = data?.price_config ?? DEFAULT_TAGRENS_PRICE_CONFIG
+  const type = (data?.type ?? 'tagrens') as CalculatorType
+  const config = data?.price_config && Object.keys(data.price_config).length > 0
+    ? data.price_config
+    : getDefaultPriceConfig(type)
 
-  // Cache i 60 sekunder
-  configCache.set(calculatorId, {
-    config,
-    expiresAt: Date.now() + 60_000,
-  })
-
-  return config
+  configCache.set(calculatorId, { config, type, expiresAt: Date.now() + 60_000 })
+  return { config, type }
 }
 
 // ============================================
@@ -71,31 +37,30 @@ async function getPriceConfig(calculatorId?: string): Promise<TagrensPriceConfig
 // ============================================
 
 export async function POST(request: NextRequest) {
-  let body: unknown
+  let body: Record<string, unknown>
   try {
-    body = await request.json()
+    body = await request.json() as Record<string, unknown>
   } catch {
     return NextResponse.json({ error: 'Ugyldig JSON' }, { status: 400 })
   }
 
-  const result = calculateRequestSchema.safeParse(body)
-  if (!result.success) {
-    return NextResponse.json(
-      { error: 'Validering fejlede', details: result.error.issues },
-      { status: 400 }
-    )
-  }
-
-  const { calculatorId, houseDetails, extraDetails } = result.data
+  const calculatorId = body.calculatorId as string | undefined
+  const calculatorType = body.calculatorType as CalculatorType | undefined
 
   try {
-    const config = await getPriceConfig(calculatorId)
+    let type: CalculatorType = calculatorType ?? 'tagrens'
+    let config: AnyPriceConfig
 
-    const priceResult = calculateTagrensPrice(
-      houseDetails as TagrensHouseDetails,
-      extraDetails as TagrensExtraDetails,
-      config
-    )
+    if (calculatorId && calculatorId !== 'demo') {
+      const result = await getCalculatorById(calculatorId)
+      type = result.type
+      config = result.config
+    } else {
+      config = getDefaultPriceConfig(type)
+    }
+
+    const calcConfig = getCalculatorConfig(type)
+    const priceResult = calcConfig.calculatePrice(body, config)
 
     return NextResponse.json({ data: priceResult })
   } catch (err) {

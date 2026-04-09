@@ -89,6 +89,7 @@ export default async function SubdomainPage({ params }: PageProps) {
         <QuoteCalculator
           tenantId={tenant.id}
           calculatorId={calc.id}
+          calculatorType={calc.type as import('@/lib/calculators/types').CalculatorType}
           priceConfig={priceConfig}
           primaryColor={primary}
         />

@@ -1,0 +1,12 @@
+{
+  "version": "0.0.1",
+  "configurations": [
+    {
+      "name": "next-dev",
+      "runtimeExecutable": "npx",
+      "runtimeArgs": ["pnpm", "run", "dev"],
+      "port": 3000,
+      "autoPort": true
+    }
+  ]
+}

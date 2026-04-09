@@ -155,7 +155,12 @@ export default function OnboardingPage() {
     }
 
     dispatch({ type: 'SET_LOADING', loading: true })
-    const { error } = await supabase.auth.signUp({ email: state.email, password: state.password })
+    const siteUrl = process.env.NEXT_PUBLIC_APP_URL || (typeof window !== 'undefined' ? window.location.origin : 'https://bergn.dk')
+    const { error } = await supabase.auth.signUp({
+      email: state.email,
+      password: state.password,
+      options: { emailRedirectTo: `${siteUrl}/auth/callback?type=signup` },
+    })
     dispatch({ type: 'SET_LOADING', loading: false })
 
     if (error) {

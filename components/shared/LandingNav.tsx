@@ -38,13 +38,18 @@ export default function LandingNav() {
           {/* Desktop */}
           <div className="hidden md:flex items-center gap-1">
             <div className="relative" onMouseEnter={() => setServicesOpen(true)} onMouseLeave={() => setServicesOpen(false)}>
-              <button className={cn('flex items-center gap-1 px-3 py-2 text-sm font-medium rounded-lg transition-colors', scrolled ? 'text-gray-600 hover:text-gray-900 hover:bg-gray-100' : 'text-white/80 hover:text-white hover:bg-white/10')}>
-                Services <ChevronDown className="h-3.5 w-3.5" />
+              <button
+                className={cn('flex items-center gap-1 px-3 py-2 text-sm font-medium rounded-lg transition-colors', scrolled ? 'text-gray-600 hover:text-gray-900 hover:bg-gray-100' : 'text-white/80 hover:text-white hover:bg-white/10')}
+                onClick={() => setServicesOpen((v) => !v)}
+                aria-expanded={servicesOpen}
+                aria-haspopup="true"
+              >
+                Services <ChevronDown className={cn('h-3.5 w-3.5 transition-transform', servicesOpen && 'rotate-180')} />
               </button>
               {servicesOpen && (
-                <div className="absolute top-full left-0 mt-1 w-52 rounded-xl bg-white border shadow-lg py-2">
+                <div className="absolute top-full left-0 mt-1 w-52 rounded-xl bg-white border shadow-lg py-2" role="menu">
                   {SERVICES.map((s) => (
-                    <Link key={s.href} href={s.href} className="block px-4 py-2.5 text-sm text-gray-700 hover:bg-gray-50 hover:text-gray-900">{s.label}</Link>
+                    <Link key={s.href} href={s.href} role="menuitem" className="block px-4 py-2.5 text-sm text-gray-700 hover:bg-gray-50 hover:text-gray-900">{s.label}</Link>
                   ))}
                 </div>
               )}
@@ -66,7 +71,7 @@ export default function LandingNav() {
           </div>
 
           {/* Mobile toggle */}
-          <button className="md:hidden p-2" onClick={() => setMobileOpen(!mobileOpen)}>
+          <button className="md:hidden p-2" onClick={() => setMobileOpen(!mobileOpen)} aria-label={mobileOpen ? 'Luk menu' : 'Åbn menu'}>
             {mobileOpen
               ? <X className={cn('h-5 w-5', scrolled ? 'text-gray-900' : 'text-white')} />
               : <Menu className={cn('h-5 w-5', scrolled ? 'text-gray-900' : 'text-white')} />}

@@ -2,6 +2,7 @@
 
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
+import Link from 'next/link'
 import { createClient } from '@/lib/supabase/client'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
@@ -55,7 +56,7 @@ export default function ResetPasswordPage() {
       setSuccess(true)
       setTimeout(() => {
         router.push('/admin/dashboard')
-      }, 2000)
+      }, 5000)
     } catch {
       setError('Der opstod en fejl. Prøv igen.')
     } finally {
@@ -72,9 +73,14 @@ export default function ResetPasswordPage() {
           </div>
           <CardTitle className="text-2xl font-bold">Adgangskode opdateret</CardTitle>
           <CardDescription>
-            Din adgangskode er blevet ændret. Du sendes videre til dit dashboard...
+            Din adgangskode er blevet ændret. Du sendes videre om et øjeblik.
           </CardDescription>
         </CardHeader>
+        <CardContent className="text-center">
+          <Link href="/admin/dashboard" className="text-sm text-primary hover:underline font-medium">
+            Gå til dashboard nu →
+          </Link>
+        </CardContent>
       </Card>
     )
   }

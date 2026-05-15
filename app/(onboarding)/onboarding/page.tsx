@@ -110,38 +110,41 @@ function loadSavedState(): OnboardingState {
 export default function OnboardingPage() {
   const [state, dispatch] = useReducer(reducer, initialState)
   const [hydrated, setHydrated] = useState(false)
+  const [checkingSession, setCheckingSession] = useState(true)
   const [copied, setCopied] = useState(false)
   const supabase = createClient()
 
-  // Hydrate state fra localStorage (kun client-side)
+  // Hydrate state fra localStorage + detect eksisterende session
   useEffect(() => {
-    const saved = loadSavedState()
-    if (saved.step > 1) {
-      Object.entries(saved).forEach(([key, value]) => {
-        if (key !== 'isLoading' && key !== 'error' && value !== initialState[key as keyof OnboardingState]) {
-          dispatch({ type: 'SET_FIELD', field: key, value })
-        }
-      })
-      if (saved.step > 1) dispatch({ type: 'SET_STEP', step: saved.step })
-    }
-    setHydrated(true)
-  }, [])
-
-  // P0 fix: Detect eksisterende session og spring trin 1 over.
-  // Logget-ind brugere uden tenant redirectes hertil via admin layout.
-  // Uden dette fix ser de signup-formularen igen.
-  useEffect(() => {
-    if (!hydrated || state.step !== 1 || state.accountCreated) return
-    supabase.auth.getUser().then(({ data: { user } }) => {
-      if (user?.email) {
-        dispatch({ type: 'SET_FIELD', field: 'email', value: user.email })
-        dispatch({ type: 'SET_FIELD', field: 'accountCreated', value: true })
-        dispatch({ type: 'SET_FIELD', field: 'emailConfirmed', value: true })
-        dispatch({ type: 'SET_FIELD', field: 'companyEmail', value: user.email })
-        dispatch({ type: 'SET_STEP', step: 2 })
+    async function init() {
+      const saved = loadSavedState()
+      if (saved.step > 1) {
+        Object.entries(saved).forEach(([key, value]) => {
+          if (key !== 'isLoading' && key !== 'error' && value !== initialState[key as keyof OnboardingState]) {
+            dispatch({ type: 'SET_FIELD', field: key, value })
+          }
+        })
+        dispatch({ type: 'SET_STEP', step: saved.step })
       }
-    })
-  }, [hydrated, state.step, state.accountCreated]) // eslint-disable-line react-hooks/exhaustive-deps -- supabase client is a singleton
+
+      // P0 fix: Logget-ind brugere uden tenant redirectes hertil via admin layout.
+      // Check for eksisterende session og spring trin 1 (kontooprettelse) over.
+      if (saved.step <= 1 && !saved.accountCreated) {
+        const { data: { user } } = await supabase.auth.getUser()
+        if (user?.email) {
+          dispatch({ type: 'SET_FIELD', field: 'email', value: user.email })
+          dispatch({ type: 'SET_FIELD', field: 'accountCreated', value: true })
+          dispatch({ type: 'SET_FIELD', field: 'emailConfirmed', value: true })
+          dispatch({ type: 'SET_FIELD', field: 'companyEmail', value: user.email })
+          dispatch({ type: 'SET_STEP', step: 2 })
+        }
+      }
+
+      setHydrated(true)
+      setCheckingSession(false)
+    }
+    init()
+  }, []) // eslint-disable-line react-hooks/exhaustive-deps -- runs once on mount
 
   // Persist state til localStorage
   useEffect(() => {
@@ -241,6 +244,17 @@ export default function OnboardingPage() {
   // ============================================
   // RENDER
   // ============================================
+
+  if (checkingSession) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-primary to-primary/90 flex flex-col items-center justify-center px-4 py-8">
+        <div className="mb-6">
+          <span className="text-2xl font-bold text-white">Bergn.dk</span>
+        </div>
+        <Loader2 className="h-6 w-6 animate-spin text-white/60" />
+      </div>
+    )
+  }
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-primary to-primary/90 flex flex-col items-center justify-center px-4 py-8">

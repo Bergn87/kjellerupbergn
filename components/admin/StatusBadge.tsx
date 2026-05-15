@@ -2,7 +2,7 @@ import { cn } from '@/lib/utils'
 
 const STATUS_MAP: Record<string, { label: string; className: string }> = {
   draft: { label: 'Kladde', className: 'border-gray-300 text-gray-400' },
-  pending: { label: 'Afventer', className: 'border-[#D4A843] text-[#92710A]' },
+  pending: { label: 'Afventer', className: 'border-bergn-accent text-bergn-accent-text' },
   accepted: { label: 'Accepteret', className: 'border-green-500 text-green-700' },
   rejected: { label: 'Afvist', className: 'border-red-400 text-red-600' },
   expired: { label: 'Udlobet', className: 'border-gray-300 text-gray-400' },

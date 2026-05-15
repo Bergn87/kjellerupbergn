@@ -48,7 +48,7 @@ export default async function SuperadminDashboard() {
         {kpis.map((kpi) => {
           const Icon = kpi.icon
           return (
-            <Card key={kpi.label} className="border border-[#E8EAF0]">
+            <Card key={kpi.label} className="border border-bergn-card-border">
               <CardContent className="pt-5 pb-4 px-5">
                 <div className="flex items-center gap-2 mb-1">
                   <Icon className="h-4 w-4 text-gray-400" />
@@ -61,7 +61,7 @@ export default async function SuperadminDashboard() {
         })}
       </div>
 
-      <Card className="border border-[#E8EAF0]">
+      <Card className="border border-bergn-card-border">
         <CardContent className="pt-5">
           <h2 className="text-sm font-semibold text-gray-500 uppercase tracking-wider mb-4">Seneste tenants</h2>
           <div className="divide-y">

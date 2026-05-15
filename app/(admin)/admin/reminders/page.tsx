@@ -89,7 +89,7 @@ export default function RemindersPage() {
       </p>
 
       {rules.length === 0 ? (
-        <Card className="border border-[#E8EAF0]">
+        <Card className="border border-bergn-card-border">
           <CardContent className="py-16 text-center">
             <Bell className="mx-auto mb-4 h-12 w-12 text-muted-foreground/40" />
             <h3 className="font-semibold mb-1">Ingen påmindelser sat op</h3>
@@ -99,7 +99,7 @@ export default function RemindersPage() {
       ) : (
         <div className="space-y-4">
           {rules.map((rule) => (
-            <Card key={rule.id} className="border border-[#E8EAF0]">
+            <Card key={rule.id} className="border border-bergn-card-border">
               <CardHeader className="flex flex-row items-center justify-between pb-2">
                 <div className="flex items-center gap-3">
                   <GripVertical className="h-4 w-4 text-muted-foreground" />

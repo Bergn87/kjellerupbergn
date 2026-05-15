@@ -36,8 +36,8 @@ export default function PriserPage() {
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
             {PLANS.map((plan) => (
-              <div key={plan.name} className={`rounded-2xl bg-white p-8 ${plan.popular ? 'ring-2 ring-[#1B3C2E] shadow-xl relative' : 'border border-gray-200'}`}>
-                {plan.popular && <div className="absolute -top-3 left-1/2 -translate-x-1/2 rounded-full bg-[#1B3C2E] px-4 py-1 text-xs font-bold text-white">Mest populær</div>}
+              <div key={plan.name} className={`rounded-2xl bg-white p-8 ${plan.popular ? 'ring-2 ring-primary shadow-xl relative' : 'border border-gray-200'}`}>
+                {plan.popular && <div className="absolute -top-3 left-1/2 -translate-x-1/2 rounded-full bg-primary px-4 py-1 text-xs font-bold text-white">Mest populær</div>}
                 <h3 className="text-xl font-bold text-gray-900">{plan.name}</h3>
                 <p className="text-sm text-gray-500 mt-1">{plan.desc}</p>
                 <div className="mt-4 mb-6">
@@ -47,11 +47,11 @@ export default function PriserPage() {
                 <ul className="space-y-3 mb-8">
                   {plan.features.map((f) => (
                     <li key={f} className="flex items-center gap-2 text-sm text-gray-600">
-                      <Check className="h-4 w-4 text-[#1B3C2E] shrink-0" /> {f}
+                      <Check className="h-4 w-4 text-primary shrink-0" /> {f}
                     </li>
                   ))}
                 </ul>
-                <Link href="/signup" className={`block w-full rounded-lg py-3 text-center font-semibold transition-colors ${plan.popular ? 'bg-[#E8500A] text-white hover:bg-[#d04609]' : 'border-2 border-gray-200 text-gray-700 hover:border-gray-400'}`}>
+                <Link href="/signup" className={`block w-full rounded-lg py-3 text-center font-semibold transition-colors ${plan.popular ? 'bg-bergn-cta text-white hover:bg-bergn-cta-hover' : 'border-2 border-gray-200 text-gray-700 hover:border-gray-400'}`}>
                   {plan.cta}
                 </Link>
               </div>
@@ -61,7 +61,7 @@ export default function PriserPage() {
         </div>
       </section>
 
-      <section className="py-16 bg-[#F5F6FA]">
+      <section className="py-16 bg-bergn-page-bg">
         <div className="mx-auto max-w-3xl px-4">
           <h2 className="text-2xl font-extrabold text-gray-900 text-center mb-8">Spørgsmål om priser</h2>
           <div className="space-y-3">
@@ -80,7 +80,7 @@ export default function PriserPage() {
 
       <footer className="border-t bg-white py-8">
         <div className="mx-auto max-w-6xl px-4 flex items-center justify-between text-sm text-gray-400">
-          <span className="font-bold text-gray-900">Bergn<span className="text-[#D4A843]">.dk</span></span>
+          <span className="font-bold text-gray-900">Bergn<span className="text-bergn-accent">.dk</span></span>
           <p>&copy; 2026 Bergn.dk</p>
         </div>
       </footer>

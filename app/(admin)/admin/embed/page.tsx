@@ -59,7 +59,7 @@ export default function EmbedPage() {
       </p>
 
       {/* Hosted URL */}
-      <Card className="border border-[#E8EAF0]">
+      <Card className="border border-bergn-card-border">
         <CardHeader><CardTitle className="text-base">Din hosted beregner-side</CardTitle></CardHeader>
         <CardContent>
           <div className="flex items-center gap-3">
@@ -76,7 +76,7 @@ export default function EmbedPage() {
 
       {/* Embed per beregner */}
       {calculators.length === 0 ? (
-        <Card className="border border-[#E8EAF0]">
+        <Card className="border border-bergn-card-border">
           <CardContent className="py-12 text-center">
             <Code2 className="mx-auto mb-3 h-10 w-10 text-muted-foreground/40" />
             <p className="text-sm text-muted-foreground">Opret en beregner for at få embed-kode.</p>
@@ -87,7 +87,7 @@ export default function EmbedPage() {
           const embedCode = `<div id="bergn-calculator"></div>\n<script src="${appUrl}/embed.js"\n  data-tenant="${calc.tenant_id}"\n  data-calculator="${calc.id}">\n</script>`
 
           return (
-            <Card key={calc.id} className="border border-[#E8EAF0]">
+            <Card key={calc.id} className="border border-bergn-card-border">
               <CardHeader>
                 <CardTitle className="text-base">{calc.name}</CardTitle>
               </CardHeader>

@@ -78,14 +78,14 @@ export default function CompanyPage() {
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <h1 className="text-2xl font-bold tracking-tight">Virksomhed</h1>
-        <Button onClick={handleSave} disabled={saving} className="bg-[#1B3C2E] hover:bg-[#152F24]">
+        <Button onClick={handleSave} disabled={saving} className="bg-primary hover:bg-primary/90">
           {saving ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Save className="mr-2 h-4 w-4" />}
           {saved ? 'Gemt!' : 'Gem ændringer'}
         </Button>
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        <Card className="border border-[#E8EAF0]">
+        <Card className="border border-bergn-card-border">
           <CardHeader><CardTitle className="text-base">Firmaoplysninger</CardTitle></CardHeader>
           <CardContent className="space-y-4">
             <div className="space-y-2"><Label>Firmanavn</Label><Input value={tenant.company_name} onChange={(e) => update('company_name', e.target.value)} /></div>
@@ -97,7 +97,7 @@ export default function CompanyPage() {
         </Card>
 
         <div className="space-y-6">
-          <Card className="border border-[#E8EAF0]">
+          <Card className="border border-bergn-card-border">
             <CardHeader><CardTitle className="text-base">Branding</CardTitle></CardHeader>
             <CardContent className="space-y-4">
               <div className="space-y-2">
@@ -122,7 +122,7 @@ export default function CompanyPage() {
             </CardContent>
           </Card>
 
-          <Card className="border border-[#E8EAF0]">
+          <Card className="border border-bergn-card-border">
             <CardHeader><CardTitle className="text-base">Hosted URL</CardTitle></CardHeader>
             <CardContent>
               <div className="flex items-center gap-2 rounded-lg border bg-gray-50 px-3 py-2 text-sm">

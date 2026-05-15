@@ -45,7 +45,7 @@ export default async function TenantDetailPage({ params }: PageProps) {
 
       {/* Info kort */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-        <Card className="border border-[#E8EAF0]">
+        <Card className="border border-bergn-card-border">
           <CardHeader><CardTitle className="text-base">Tenant info</CardTitle></CardHeader>
           <CardContent className="space-y-2 text-sm">
             <div className="flex justify-between"><span className="text-gray-500">Plan</span><Badge className="capitalize">{tenant.plan}</Badge></div>
@@ -61,7 +61,7 @@ export default async function TenantDetailPage({ params }: PageProps) {
           </CardContent>
         </Card>
 
-        <Card className="border border-[#E8EAF0]">
+        <Card className="border border-bergn-card-border">
           <CardHeader><CardTitle className="text-base">Beregnere ({calcs.length})</CardTitle></CardHeader>
           <CardContent>
             {calcs.length === 0 ? (
@@ -81,7 +81,7 @@ export default async function TenantDetailPage({ params }: PageProps) {
       </div>
 
       {/* Tilbud */}
-      <Card className="border border-[#E8EAF0]">
+      <Card className="border border-bergn-card-border">
         <CardHeader><CardTitle className="text-base">Seneste tilbud ({quotes.length})</CardTitle></CardHeader>
         <CardContent className="p-0">
           <div className="divide-y">

@@ -39,6 +39,12 @@
   --color-popover: var(--popover);
   --color-card-foreground: var(--card-foreground);
   --color-card: var(--card);
+  --color-bergn-accent: var(--bergn-accent);
+  --color-bergn-accent-text: var(--bergn-accent-text);
+  --color-bergn-cta: var(--bergn-cta);
+  --color-bergn-cta-hover: var(--bergn-cta-hover);
+  --color-bergn-page-bg: var(--bergn-page-bg);
+  --color-bergn-card-border: var(--bergn-card-border);
   --radius-sm: calc(var(--radius) * 0.6);
   --radius-md: calc(var(--radius) * 0.8);
   --radius-lg: var(--radius);
@@ -54,6 +60,8 @@
   --bergn-sidebar-dark: #152F24;
   --bergn-accent: #D4A843;
   --bergn-accent-text: #92710A;
+  --bergn-cta: #E8500A;
+  --bergn-cta-hover: #d04609;
   --bergn-page-bg: #F5F6FA;
   --bergn-card-border: #E8EAF0;
 
@@ -63,8 +71,8 @@
   --card-foreground: oklch(0.145 0 0);
   --popover: oklch(1 0 0);
   --popover-foreground: oklch(0.145 0 0);
-  --primary: oklch(0.205 0 0);
-  --primary-foreground: oklch(0.985 0 0);
+  --primary: #1B3C2E;
+  --primary-foreground: #ffffff;
   --secondary: oklch(0.97 0 0);
   --secondary-foreground: oklch(0.205 0 0);
   --muted: oklch(0.97 0 0);

@@ -6,8 +6,8 @@ export default function DashboardMockup() {
       {/* Main dashboard card */}
       <div className="rounded-2xl bg-white shadow-2xl border border-gray-200/50 overflow-hidden transform rotate-1 md:rotate-2">
         {/* Top bar */}
-        <div className="flex items-center gap-2 px-4 py-2.5 bg-[#1B3C2E] text-white">
-          <LayoutDashboard className="h-3.5 w-3.5 text-[#D4A843]" />
+        <div className="flex items-center gap-2 px-4 py-2.5 bg-primary text-white">
+          <LayoutDashboard className="h-3.5 w-3.5 text-bergn-accent" />
           <span className="text-xs font-semibold">Hansen Tagrens</span>
           <span className="text-[9px] text-white/40 ml-auto">bergn.dk</span>
         </div>
@@ -55,7 +55,7 @@ export default function DashboardMockup() {
                 </div>
                 <div className="flex items-center gap-2">
                   <span className="text-xs font-medium">{row.amount} kr.</span>
-                  <span className={`text-[9px] px-1.5 py-0.5 rounded-full border ${row.status === 'Accepteret' ? 'border-green-300 text-green-700' : 'border-[#D4A843] text-[#92710A]'}`}>
+                  <span className={`text-[9px] px-1.5 py-0.5 rounded-full border ${row.status === 'Accepteret' ? 'border-green-300 text-green-700' : 'border-bergn-accent text-bergn-accent-text'}`}>
                     {row.status}
                   </span>
                 </div>
@@ -69,13 +69,13 @@ export default function DashboardMockup() {
       <div className="absolute -top-4 -left-4 md:-left-8 rounded-xl bg-white shadow-xl border border-gray-200 p-3.5 max-w-[220px] transform -rotate-2">
         <div className="flex items-center justify-between mb-1.5">
           <div className="flex items-center gap-1.5">
-            <Bell className="h-3.5 w-3.5 text-[#E8500A]" />
+            <Bell className="h-3.5 w-3.5 text-bergn-cta" />
             <span className="text-xs font-semibold text-gray-900">Nyt lead!</span>
           </div>
           <span className="text-[9px] text-green-600 font-medium">lige nu</span>
         </div>
         <p className="text-[11px] text-gray-600 mb-2">Søren Hansen, Næstved — Tagrens, 148 m²</p>
-        <button className="flex items-center gap-1 text-[10px] font-semibold text-[#1B3C2E] hover:underline">
+        <button className="flex items-center gap-1 text-[10px] font-semibold text-primary hover:underline">
           Se tilbud <ArrowRight className="h-2.5 w-2.5" />
         </button>
       </div>

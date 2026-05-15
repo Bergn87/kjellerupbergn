@@ -31,14 +31,14 @@ export default async function PaymentsPage() {
       <h1 className="text-2xl font-bold">Betalinger</h1>
 
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
-        <Card className="border border-[#E8EAF0]"><CardContent className="pt-5 pb-4 px-5"><p className="text-[11px] font-semibold uppercase tracking-wider text-gray-400">MRR</p><p className="text-2xl font-bold">{formatKr(mrr)}</p></CardContent></Card>
-        <Card className="border border-[#E8EAF0]"><CardContent className="pt-5 pb-4 px-5"><p className="text-[11px] font-semibold uppercase tracking-wider text-gray-400">ARR</p><p className="text-2xl font-bold">{formatKr(arr)}</p></CardContent></Card>
-        <Card className="border border-[#E8EAF0]"><CardContent className="pt-5 pb-4 px-5"><p className="text-[11px] font-semibold uppercase tracking-wider text-gray-400">Betalende</p><p className="text-2xl font-bold">{paying.length}</p></CardContent></Card>
-        <Card className="border border-[#E8EAF0]"><CardContent className="pt-5 pb-4 px-5"><p className="text-[11px] font-semibold uppercase tracking-wider text-gray-400">Trials</p><p className="text-2xl font-bold">{trials.length}</p></CardContent></Card>
+        <Card className="border border-bergn-card-border"><CardContent className="pt-5 pb-4 px-5"><p className="text-[11px] font-semibold uppercase tracking-wider text-gray-400">MRR</p><p className="text-2xl font-bold">{formatKr(mrr)}</p></CardContent></Card>
+        <Card className="border border-bergn-card-border"><CardContent className="pt-5 pb-4 px-5"><p className="text-[11px] font-semibold uppercase tracking-wider text-gray-400">ARR</p><p className="text-2xl font-bold">{formatKr(arr)}</p></CardContent></Card>
+        <Card className="border border-bergn-card-border"><CardContent className="pt-5 pb-4 px-5"><p className="text-[11px] font-semibold uppercase tracking-wider text-gray-400">Betalende</p><p className="text-2xl font-bold">{paying.length}</p></CardContent></Card>
+        <Card className="border border-bergn-card-border"><CardContent className="pt-5 pb-4 px-5"><p className="text-[11px] font-semibold uppercase tracking-wider text-gray-400">Trials</p><p className="text-2xl font-bold">{trials.length}</p></CardContent></Card>
       </div>
 
       {/* Betalende tenants */}
-      <Card className="border border-[#E8EAF0]">
+      <Card className="border border-bergn-card-border">
         <CardHeader><CardTitle className="text-base">Betalende kunder</CardTitle></CardHeader>
         <CardContent className="p-0">
           <div className="divide-y">
@@ -61,7 +61,7 @@ export default async function PaymentsPage() {
       </Card>
 
       {/* Trials */}
-      <Card className="border border-[#E8EAF0]">
+      <Card className="border border-bergn-card-border">
         <CardHeader><CardTitle className="text-base">Aktive trials</CardTitle></CardHeader>
         <CardContent className="p-0">
           <div className="divide-y">

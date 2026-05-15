@@ -57,13 +57,13 @@ export default function OmPage() {
 
             <p>
               Har du spørgsmål? Skriv til os på{' '}
-              <a href="mailto:hej@bergn.dk" className="text-[#1B3C2E] font-medium hover:underline">hej@bergn.dk</a>{' '}
-              eller ring på <a href="tel:+4570605040" className="text-[#1B3C2E] font-medium hover:underline">70 60 50 40</a>.
+              <a href="mailto:hej@bergn.dk" className="text-primary font-medium hover:underline">hej@bergn.dk</a>{' '}
+              eller ring på <a href="tel:+4570605040" className="text-primary font-medium hover:underline">70 60 50 40</a>.
             </p>
           </div>
 
           <div className="mt-12">
-            <Link href="/signup" className="inline-flex items-center justify-center rounded-lg bg-[#E8500A] px-6 py-3 text-base font-semibold text-white hover:bg-[#d04609] transition-colors">
+            <Link href="/signup" className="inline-flex items-center justify-center rounded-lg bg-bergn-cta px-6 py-3 text-base font-semibold text-white hover:bg-bergn-cta-hover transition-colors">
               Prøv Bergn gratis i 14 dage
             </Link>
           </div>
@@ -72,7 +72,7 @@ export default function OmPage() {
 
       <footer className="border-t bg-white py-8">
         <div className="mx-auto max-w-6xl px-4 flex items-center justify-between text-sm text-gray-400">
-          <span className="font-bold text-gray-900">Bergn<span className="text-[#D4A843]">.dk</span></span>
+          <span className="font-bold text-gray-900">Bergn<span className="text-bergn-accent">.dk</span></span>
           <p>&copy; 2026 Bergn.dk</p>
         </div>
       </footer>

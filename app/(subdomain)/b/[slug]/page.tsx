@@ -43,7 +43,7 @@ export default async function SubdomainPage({ params }: PageProps) {
 
   if (!tenant) notFound()
 
-  const primary = tenant.primary_color ?? '#1B4332'
+  const primary = tenant.primary_color ?? '#1B3C2E'
 
   // Hent ALLE aktive beregnere
   const { data: calculators } = await supabase

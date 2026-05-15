@@ -56,7 +56,7 @@ export async function completeOnboarding(data: OnboardingData) {
       company_phone: data.companyPhone || null,
       company_email: data.companyEmail || user.email,
       company_logo_url: data.logoUrl,
-      primary_color: data.primaryColor || '#1B4332',
+      primary_color: data.primaryColor || '#1B3C2E',
     } as never)
     .select('id')
     .single<{ id: string }>()

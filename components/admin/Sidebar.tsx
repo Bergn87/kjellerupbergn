@@ -46,13 +46,13 @@ export default function Sidebar({ tenantName, plan }: SidebarProps) {
   const pathname = usePathname()
 
   return (
-    <div className="flex h-full flex-col bg-[#1B3C2E] text-white">
+    <div className="flex h-full flex-col bg-primary text-white">
       {/* TOP: Logo + firmanavn */}
       <div className="px-5 pt-6 pb-5 border-b border-white/10">
         <Link href="/admin/dashboard" className="block">
           <div className="flex items-center gap-3 mb-1">
             <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-white/10">
-              <Calculator className="h-5 w-5 text-[#D4A843]" />
+              <Calculator className="h-5 w-5 text-bergn-accent" />
             </div>
             <div className="min-w-0">
               <p className="text-sm font-bold tracking-tight truncate">{tenantName}</p>
@@ -77,11 +77,11 @@ export default function Sidebar({ tenantName, plan }: SidebarProps) {
               className={cn(
                 'flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium transition-colors',
                 isActive
-                  ? 'bg-[#D4A843]/15 text-[#D4A843]'
+                  ? 'bg-bergn-accent/15 text-bergn-accent'
                   : 'text-white/60 hover:bg-white/8 hover:text-white'
               )}
             >
-              <Icon className={cn('h-4 w-4 shrink-0', isActive && 'text-[#D4A843]')} />
+              <Icon className={cn('h-4 w-4 shrink-0', isActive && 'text-bergn-accent')} />
               {item.label}
             </Link>
           )
@@ -90,7 +90,7 @@ export default function Sidebar({ tenantName, plan }: SidebarProps) {
 
       {/* BOTTOM: Plan + Log ud */}
       <div className="border-t border-white/10 px-4 py-4 space-y-3">
-        <div className="inline-flex items-center rounded-full border border-[#D4A843]/40 px-2.5 py-0.5 text-[11px] font-medium text-[#D4A843]">
+        <div className="inline-flex items-center rounded-full border border-bergn-accent/40 px-2.5 py-0.5 text-[11px] font-medium text-bergn-accent">
           {PLAN_LABELS[plan] ?? 'Trial'}
         </div>
 

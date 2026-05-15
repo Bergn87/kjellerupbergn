@@ -62,7 +62,7 @@ export default async function QuotePage({ params }: PageProps) {
     if (row.value) settings[row.key] = row.value
   })
 
-  const primary = tenant.primary_color || '#1B4332'
+  const primary = tenant.primary_color || '#1B3C2E'
   const status = quote.status as keyof typeof STATUS_CONFIG
   const statusCfg = STATUS_CONFIG[status] ?? STATUS_CONFIG.pending
   const lineItems = (quote.line_items ?? []) as QuoteLineItem[]

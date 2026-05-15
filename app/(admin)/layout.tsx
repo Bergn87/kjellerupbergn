@@ -29,7 +29,7 @@ export default async function AdminLayout({
         <AdminMobileHeader tenantName={tenant.company_name} plan={tenant.plan} />
 
         {/* Page content */}
-        <main className="flex-1 overflow-y-auto bg-[#F5F6FA] p-4 md:p-8">
+        <main className="flex-1 overflow-y-auto bg-bergn-page-bg p-4 md:p-8">
           {children}
         </main>
       </div>
@@ -38,7 +38,7 @@ export default async function AdminLayout({
       <Link
         href={`/b/${tenant.slug}`}
         target="_blank"
-        className="fixed bottom-6 right-6 bg-[#1B3C2E] text-white pl-3 pr-4 py-2.5 rounded-full shadow-lg hover:bg-[#152F24] text-sm font-medium z-50 hidden md:flex items-center gap-2 transition-colors"
+        className="fixed bottom-6 right-6 bg-primary text-white pl-3 pr-4 py-2.5 rounded-full shadow-lg hover:bg-primary/90 text-sm font-medium z-50 hidden md:flex items-center gap-2 transition-colors"
       >
         <Play className="h-3.5 w-3.5" />
         Test Beregner

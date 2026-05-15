@@ -31,8 +31,8 @@ export default function LandingNav() {
       )}>
         <div className="mx-auto max-w-6xl px-4 flex items-center justify-between h-16">
           <Link href="/" className="text-lg font-bold shrink-0">
-            <span className={scrolled ? 'text-[#1B3C2E]' : 'text-white'}>Bergn</span>
-            <span className="text-[#D4A843]">.dk</span>
+            <span className={scrolled ? 'text-primary' : 'text-white'}>Bergn</span>
+            <span className="text-bergn-accent">.dk</span>
           </Link>
 
           {/* Desktop */}
@@ -60,7 +60,7 @@ export default function LandingNav() {
               <Phone className="h-3.5 w-3.5" /> 70 60 50 40
             </a>
 
-            <Link href="/signup" className="ml-1 rounded-lg bg-[#E8500A] px-4 py-2 text-sm font-semibold text-white hover:bg-[#d04609] transition-colors">
+            <Link href="/signup" className="ml-1 rounded-lg bg-bergn-cta px-4 py-2 text-sm font-semibold text-white hover:bg-bergn-cta-hover transition-colors">
               Prøv gratis
             </Link>
           </div>
@@ -88,7 +88,7 @@ export default function LandingNav() {
             <Link href="/login" className="block px-3 py-3 text-base font-medium text-gray-800" onClick={() => setMobileOpen(false)}>Log ind</Link>
             <div className="h-px bg-gray-200 my-4" />
             <a href="tel:+4570605040" className="flex items-center gap-2 px-3 py-3 text-base font-medium text-gray-800"><Phone className="h-4 w-4" /> 70 60 50 40</a>
-            <Link href="/signup" className="block w-full text-center rounded-lg bg-[#E8500A] px-4 py-3 text-base font-semibold text-white mt-4" onClick={() => setMobileOpen(false)}>Prøv gratis</Link>
+            <Link href="/signup" className="block w-full text-center rounded-lg bg-bergn-cta px-4 py-3 text-base font-semibold text-white mt-4" onClick={() => setMobileOpen(false)}>Prøv gratis</Link>
           </div>
         </div>
       )}

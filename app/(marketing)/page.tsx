@@ -15,14 +15,14 @@ export default function LandingPage() {
       <LandingNav />
 
       {/* ═══ HERO ═══ */}
-      <section className="relative bg-[#1B3C2E] overflow-hidden">
+      <section className="relative bg-primary overflow-hidden">
         <div className="mx-auto max-w-6xl px-4 pt-28 pb-20 md:pt-36 md:pb-28">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-16 items-center">
             {/* Left */}
             <div>
               <h1 className="text-4xl md:text-5xl font-extrabold leading-[1.1] tracking-tight text-white">
                 Dine kunder beregner prisen selv.{' '}
-                <span className="text-[#D4A843]">Du får tilbuddet.</span>
+                <span className="text-bergn-accent">Du får tilbuddet.</span>
               </h1>
 
               <p className="mt-5 text-lg text-white/60 max-w-lg leading-relaxed">
@@ -34,7 +34,7 @@ export default function LandingPage() {
               <div className="flex flex-col sm:flex-row gap-3 mt-8">
                 <Link
                   href="/signup"
-                  className="inline-flex items-center justify-center rounded-lg bg-[#E8500A] px-6 py-3 text-base font-semibold text-white hover:bg-[#d04609] transition-colors"
+                  className="inline-flex items-center justify-center rounded-lg bg-bergn-cta px-6 py-3 text-base font-semibold text-white hover:bg-bergn-cta-hover transition-colors"
                 >
                   Start gratis i 14 dage
                 </Link>
@@ -72,8 +72,8 @@ export default function LandingPage() {
                 const Icon = item.icon
                 return (
                   <div key={item.title} className="rounded-xl border border-gray-200 bg-white p-8 text-left">
-                    <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-[#1B3C2E]/10 mb-4">
-                      <Icon className="h-5 w-5 text-[#1B3C2E]" />
+                    <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-primary/10 mb-4">
+                      <Icon className="h-5 w-5 text-primary" />
                     </div>
                     <h3 className="text-lg font-bold text-gray-900 mb-2">{item.title}</h3>
                     <p className="text-gray-600 text-sm leading-relaxed">{item.desc}</p>
@@ -87,7 +87,7 @@ export default function LandingPage() {
 
       {/* ═══ DEMO ═══ */}
       <FadeIn>
-        <section id="demo" className="py-20 bg-[#F5F6FA]">
+        <section id="demo" className="py-20 bg-bergn-page-bg">
           <div className="mx-auto max-w-3xl px-4">
             <div className="text-center mb-10">
               <h2 className="text-3xl md:text-4xl font-extrabold text-gray-900">
@@ -126,8 +126,8 @@ export default function LandingPage() {
                 const Icon = f.icon
                 return (
                   <div key={f.title} className="rounded-xl border border-gray-200 p-6">
-                    <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-[#1B3C2E]/10 mb-3">
-                      <Icon className="h-5 w-5 text-[#1B3C2E]" />
+                    <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-primary/10 mb-3">
+                      <Icon className="h-5 w-5 text-primary" />
                     </div>
                     <h3 className="text-base font-bold text-gray-900 mb-2">{f.title}</h3>
                     <p className="text-gray-600 text-sm leading-relaxed">{f.desc}</p>
@@ -141,7 +141,7 @@ export default function LandingPage() {
 
       {/* ═══ SÅDAN VIRKER DET ═══ */}
       <FadeIn>
-        <section className="py-20 bg-[#F5F6FA]">
+        <section className="py-20 bg-bergn-page-bg">
           <div className="mx-auto max-w-4xl px-4">
             <h2 className="text-3xl md:text-4xl font-extrabold text-center text-gray-900 mb-12">Sådan virker det</h2>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
@@ -151,7 +151,7 @@ export default function LandingPage() {
                 { num: '3', title: 'Modtag tilbud automatisk', desc: 'Kunder beregner pris på din side. Du modtager leads med alle detaljer i dit admin-panel.' },
               ].map((s) => (
                 <div key={s.num} className="text-center">
-                  <div className="mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-full bg-[#1B3C2E] text-white text-lg font-bold">{s.num}</div>
+                  <div className="mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-full bg-primary text-white text-lg font-bold">{s.num}</div>
                   <h3 className="text-base font-bold text-gray-900 mb-2">{s.title}</h3>
                   <p className="text-gray-600 text-sm">{s.desc}</p>
                 </div>
@@ -177,13 +177,13 @@ export default function LandingPage() {
               ].map((c) => {
                 const Icon = c.icon
                 return (
-                  <Link key={c.href} href={c.href} className="group rounded-xl border-t-4 border-[#1B3C2E] bg-white border-x border-b border-x-gray-200 border-b-gray-200 p-6 hover:shadow-lg transition-shadow">
-                    <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-[#1B3C2E]/10 mb-3">
-                      <Icon className="h-5 w-5 text-[#1B3C2E]" />
+                  <Link key={c.href} href={c.href} className="group rounded-xl border-t-4 border-primary bg-white border-x border-b border-x-gray-200 border-b-gray-200 p-6 hover:shadow-lg transition-shadow">
+                    <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-primary/10 mb-3">
+                      <Icon className="h-5 w-5 text-primary" />
                     </div>
                     <h3 className="text-sm font-bold text-gray-900 mb-1">{c.title}</h3>
                     <p className="text-xs text-gray-500 mb-3 leading-relaxed">{c.desc}</p>
-                    <span className="text-xs font-semibold text-[#1B3C2E] flex items-center gap-1 group-hover:gap-2 transition-all">
+                    <span className="text-xs font-semibold text-primary flex items-center gap-1 group-hover:gap-2 transition-all">
                       Se beregneren <ArrowRight className="h-3 w-3" />
                     </span>
                   </Link>
@@ -196,7 +196,7 @@ export default function LandingPage() {
 
       {/* ═══ PRISER ═══ */}
       <FadeIn>
-        <section id="priser" className="py-20 bg-[#F5F6FA]">
+        <section id="priser" className="py-20 bg-bergn-page-bg">
           <div className="mx-auto max-w-5xl px-4">
             <h2 className="text-3xl md:text-4xl font-extrabold text-center text-gray-900 mb-12">Priser</h2>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
@@ -205,9 +205,9 @@ export default function LandingPage() {
                 { name: 'Pro', price: '599', features: ['200 tilbud / måned', 'Email + SMS', 'PDF-tilbud', '3 beregnere', 'Automatiske påmindelser'], cta: 'Start gratis', popular: true },
                 { name: 'Business', price: '999', features: ['1.000 tilbud / måned', 'Alt fra Pro', 'Ubegrænsede beregnere', '5 brugere', 'Prioriteret support'], cta: 'Kontakt os', popular: false },
               ].map((plan) => (
-                <div key={plan.name} className={`rounded-2xl bg-white p-8 ${plan.popular ? 'ring-2 ring-[#1B3C2E] shadow-xl relative' : 'border border-gray-200'}`}>
+                <div key={plan.name} className={`rounded-2xl bg-white p-8 ${plan.popular ? 'ring-2 ring-primary shadow-xl relative' : 'border border-gray-200'}`}>
                   {plan.popular && (
-                    <div className="absolute -top-3 left-1/2 -translate-x-1/2 rounded-full bg-[#1B3C2E] px-4 py-1 text-xs font-bold text-white">Mest populær</div>
+                    <div className="absolute -top-3 left-1/2 -translate-x-1/2 rounded-full bg-primary px-4 py-1 text-xs font-bold text-white">Mest populær</div>
                   )}
                   <h3 className="text-xl font-bold text-gray-900">{plan.name}</h3>
                   <div className="mt-4 mb-6">
@@ -217,11 +217,11 @@ export default function LandingPage() {
                   <ul className="space-y-3 mb-8">
                     {plan.features.map((f) => (
                       <li key={f} className="flex items-center gap-2 text-sm text-gray-600">
-                        <Check className="h-4 w-4 text-[#1B3C2E] shrink-0" /> {f}
+                        <Check className="h-4 w-4 text-primary shrink-0" /> {f}
                       </li>
                     ))}
                   </ul>
-                  <Link href="/signup" className={`block w-full rounded-lg py-3 text-center font-semibold transition-colors ${plan.popular ? 'bg-[#E8500A] text-white hover:bg-[#d04609]' : 'border-2 border-gray-200 text-gray-700 hover:border-gray-400'}`}>
+                  <Link href="/signup" className={`block w-full rounded-lg py-3 text-center font-semibold transition-colors ${plan.popular ? 'bg-bergn-cta text-white hover:bg-bergn-cta-hover' : 'border-2 border-gray-200 text-gray-700 hover:border-gray-400'}`}>
                     {plan.cta}
                   </Link>
                 </div>
@@ -261,13 +261,13 @@ export default function LandingPage() {
       </FadeIn>
 
       {/* ═══ FINAL CTA ═══ */}
-      <section className="py-20 bg-[#1B3C2E] text-white text-center">
+      <section className="py-20 bg-primary text-white text-center">
         <div className="mx-auto max-w-2xl px-4">
           <h2 className="text-3xl md:text-4xl font-extrabold mb-4">Prøv Bergn gratis i 14 dage</h2>
           <p className="text-lg text-white/60 mb-8">
             Opsæt din beregner på 10 minutter. Ingen kreditkort.
           </p>
-          <Link href="/signup" className="inline-flex items-center justify-center rounded-lg bg-[#E8500A] px-10 py-4 text-lg font-bold text-white hover:bg-[#d04609] transition-colors">
+          <Link href="/signup" className="inline-flex items-center justify-center rounded-lg bg-bergn-cta px-10 py-4 text-lg font-bold text-white hover:bg-bergn-cta-hover transition-colors">
             Start gratis
           </Link>
           <p className="text-sm text-white/30 mt-4">eller ring til os: 70 60 50 40</p>
@@ -279,7 +279,7 @@ export default function LandingPage() {
         <div className="mx-auto max-w-6xl px-4">
           <div className="grid grid-cols-2 md:grid-cols-5 gap-8">
             <div className="col-span-2 md:col-span-1">
-              <div className="text-lg font-bold text-gray-900 mb-2">Bergn<span className="text-[#D4A843]">.dk</span></div>
+              <div className="text-lg font-bold text-gray-900 mb-2">Bergn<span className="text-bergn-accent">.dk</span></div>
               <p className="text-xs text-gray-500">Tilbudsværktøj til håndværkere</p>
             </div>
             <div>

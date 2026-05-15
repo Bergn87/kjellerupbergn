@@ -427,8 +427,7 @@ export default function NewQuotePage() {
               Gem kladde
             </Button>
             <Button
-              className="flex-1 text-white"
-              style={{ backgroundColor: '#E8500A' }}
+              className="flex-1 bg-bergn-cta text-white"
               disabled={isSubmitting}
               onClick={() => handleSubmit('pending')}
             >

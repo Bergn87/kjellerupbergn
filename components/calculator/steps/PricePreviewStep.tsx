@@ -58,8 +58,7 @@ export default function PricePreviewStep({ primaryColor, priceResult, onContinue
       </div>
 
       <Button
-        className="w-full text-white"
-        style={{ backgroundColor: '#E8500A' }}
+        className="w-full text-white bg-bergn-cta"
         size="lg"
         onClick={onContinue}
       >

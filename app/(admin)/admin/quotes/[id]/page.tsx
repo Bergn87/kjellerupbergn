@@ -57,7 +57,7 @@ export default async function QuoteDetailPage({ params }: PageProps) {
 
   const lineItems = (quote.line_items ?? []) as QuoteLineItem[]
   const houseDetails = quote.house_details as Record<string, unknown> | null
-  const primary = tenant.primary_color || '#1B4332'
+  const primary = tenant.primary_color || '#1B3C2E'
 
   // Tidslinje-events
   const timeline: { label: string; date: string; icon: string }[] = [

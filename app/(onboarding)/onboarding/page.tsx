@@ -117,7 +117,6 @@ export default function OnboardingPage() {
   useEffect(() => {
     const saved = loadSavedState()
     if (saved.step > 1) {
-      // Restore alle felter
       Object.entries(saved).forEach(([key, value]) => {
         if (key !== 'isLoading' && key !== 'error' && value !== initialState[key as keyof OnboardingState]) {
           dispatch({ type: 'SET_FIELD', field: key, value })
@@ -127,6 +126,22 @@ export default function OnboardingPage() {
     }
     setHydrated(true)
   }, [])
+
+  // P0 fix: Detect eksisterende session og spring trin 1 over.
+  // Logget-ind brugere uden tenant redirectes hertil via admin layout.
+  // Uden dette fix ser de signup-formularen igen.
+  useEffect(() => {
+    if (!hydrated || state.step !== 1 || state.accountCreated) return
+    supabase.auth.getUser().then(({ data: { user } }) => {
+      if (user?.email) {
+        dispatch({ type: 'SET_FIELD', field: 'email', value: user.email })
+        dispatch({ type: 'SET_FIELD', field: 'accountCreated', value: true })
+        dispatch({ type: 'SET_FIELD', field: 'emailConfirmed', value: true })
+        dispatch({ type: 'SET_FIELD', field: 'companyEmail', value: user.email })
+        dispatch({ type: 'SET_STEP', step: 2 })
+      }
+    })
+  }, [hydrated, state.step, state.accountCreated]) // eslint-disable-line react-hooks/exhaustive-deps -- supabase client is a singleton
 
   // Persist state til localStorage
   useEffect(() => {

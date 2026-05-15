@@ -1,6 +1,7 @@
 'use client'
 
-import { useReducer, useState, useEffect } from 'react'
+import { Suspense, useReducer, useState, useEffect } from 'react'
+import { useSearchParams } from 'next/navigation'
 import { createClient } from '@/lib/supabase/client'
 import { completeOnboarding } from '@/app/actions/onboarding'
 import { Card, CardContent } from '@/components/ui/card'
@@ -108,42 +109,46 @@ function loadSavedState(): OnboardingState {
 }
 
 export default function OnboardingPage() {
+  return (
+    <Suspense>
+      <OnboardingContent />
+    </Suspense>
+  )
+}
+
+function OnboardingContent() {
   const [state, dispatch] = useReducer(reducer, initialState)
   const [hydrated, setHydrated] = useState(false)
   const [checkingSession, setCheckingSession] = useState(true)
   const [copied, setCopied] = useState(false)
   const supabase = createClient()
+  const searchParams = useSearchParams()
 
   // Hydrate state fra localStorage + detect eksisterende session
   useEffect(() => {
-    async function init() {
-      const saved = loadSavedState()
-      if (saved.step > 1) {
-        Object.entries(saved).forEach(([key, value]) => {
-          if (key !== 'isLoading' && key !== 'error' && value !== initialState[key as keyof OnboardingState]) {
-            dispatch({ type: 'SET_FIELD', field: key, value })
-          }
-        })
-        dispatch({ type: 'SET_STEP', step: saved.step })
-      }
-
-      // P0 fix: Logget-ind brugere uden tenant redirectes hertil via admin layout.
-      // Check for eksisterende session og spring trin 1 (kontooprettelse) over.
-      if (saved.step <= 1 && !saved.accountCreated) {
-        const { data: { user } } = await supabase.auth.getUser()
-        if (user?.email) {
-          dispatch({ type: 'SET_FIELD', field: 'email', value: user.email })
-          dispatch({ type: 'SET_FIELD', field: 'accountCreated', value: true })
-          dispatch({ type: 'SET_FIELD', field: 'emailConfirmed', value: true })
-          dispatch({ type: 'SET_FIELD', field: 'companyEmail', value: user.email })
-          dispatch({ type: 'SET_STEP', step: 2 })
+    const saved = loadSavedState()
+    if (saved.step > 1) {
+      Object.entries(saved).forEach(([key, value]) => {
+        if (key !== 'isLoading' && key !== 'error' && value !== initialState[key as keyof OnboardingState]) {
+          dispatch({ type: 'SET_FIELD', field: key, value })
         }
-      }
-
-      setHydrated(true)
-      setCheckingSession(false)
+      })
+      dispatch({ type: 'SET_STEP', step: saved.step })
     }
-    init()
+
+    // P0 fix: Admin layout redirecter hertil med ?email= naar brugeren
+    // er logget ind men ikke har en tenant. Spring trin 1 over.
+    const returningEmail = searchParams.get('email')
+    if (saved.step <= 1 && !saved.accountCreated && returningEmail) {
+      dispatch({ type: 'SET_FIELD', field: 'email', value: returningEmail })
+      dispatch({ type: 'SET_FIELD', field: 'accountCreated', value: true })
+      dispatch({ type: 'SET_FIELD', field: 'emailConfirmed', value: true })
+      dispatch({ type: 'SET_FIELD', field: 'companyEmail', value: returningEmail })
+      dispatch({ type: 'SET_STEP', step: 2 })
+    }
+
+    setHydrated(true)
+    setCheckingSession(false)
   }, []) // eslint-disable-line react-hooks/exhaustive-deps -- runs once on mount
 
   // Persist state til localStorage

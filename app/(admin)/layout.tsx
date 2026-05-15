@@ -14,7 +14,7 @@ export default async function AdminLayout({
   if (!user) redirect('/login')
 
   const tenant = await getCurrentTenant()
-  if (!tenant) redirect('/onboarding')
+  if (!tenant) redirect(`/onboarding?email=${encodeURIComponent(user.email ?? '')}`)
 
   return (
     <div className="flex h-screen">

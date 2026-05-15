@@ -57,7 +57,7 @@ export default async function QuoteDetailPage({ params }: PageProps) {
 
   const lineItems = (quote.line_items ?? []) as QuoteLineItem[]
   const houseDetails = quote.house_details as Record<string, unknown> | null
-  const primary = tenant.primary_color || '#1B4332'
+  const primary = tenant.primary_color || '#1B3C2E'
 
   // Tidslinje-events
   const timeline: { label: string; date: string; icon: string }[] = [
@@ -80,7 +80,7 @@ export default async function QuoteDetailPage({ params }: PageProps) {
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div className="flex items-center gap-3">
           <Link href="/admin/quotes">
-            <Button variant="ghost" size="icon" className="h-8 w-8">
+            <Button variant="ghost" size="icon" className="h-8 w-8" aria-label="Tilbage til tilbud">
               <ArrowLeft className="h-4 w-4" />
             </Button>
           </Link>
@@ -271,7 +271,7 @@ export default async function QuoteDetailPage({ params }: PageProps) {
                 {timeline.map((event, i) => (
                   <div key={i} className="flex gap-3">
                     <div className="flex flex-col items-center">
-                      <span className="text-base">{event.icon}</span>
+                      <span className="text-base" role="img" aria-label={event.label}>{event.icon}</span>
                       {i < timeline.length - 1 && <div className="w-px flex-1 bg-gray-200 mt-1" />}
                     </div>
                     <div className="pb-3">

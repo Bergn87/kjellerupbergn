@@ -61,7 +61,7 @@ function QuotesFilterInner({ tabs, currentStatus, currentSearch, currentPeriod }
             className={cn(
               'rounded-lg px-3 py-1.5 text-sm font-medium whitespace-nowrap transition-colors',
               currentStatus === tab.value
-                ? 'bg-[#1B3C2E] text-white'
+                ? 'bg-primary text-white'
                 : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
             )}
           >

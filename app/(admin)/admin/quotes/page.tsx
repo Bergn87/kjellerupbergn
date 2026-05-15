@@ -155,13 +155,13 @@ export default async function QuotesPage({ searchParams }: PageProps) {
                     <TableCell className="hidden md:table-cell text-muted-foreground text-sm">{formatDate(q.created_at)}</TableCell>
                     <TableCell>
                       <div className="flex items-center gap-1">
-                        <Link href={`/admin/quotes/${q.id}`} title="Vis">
-                          <Button variant="ghost" size="icon" className="h-8 w-8">
+                        <Link href={`/admin/quotes/${q.id}`}>
+                          <Button variant="ghost" size="icon" className="h-8 w-8" aria-label="Vis tilbud">
                             <Eye className="h-4 w-4" />
                           </Button>
                         </Link>
-                        <Link href={`/q/${q.id}`} target="_blank" title="PDF">
-                          <Button variant="ghost" size="icon" className="h-8 w-8">
+                        <Link href={`/q/${q.id}`} target="_blank">
+                          <Button variant="ghost" size="icon" className="h-8 w-8" aria-label="Åbn PDF">
                             <FileText className="h-4 w-4" />
                           </Button>
                         </Link>

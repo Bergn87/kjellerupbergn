@@ -13,7 +13,7 @@ export default async function SuperadminLayout({ children }: { children: React.R
   }
 
   return (
-    <div className="min-h-screen bg-[#F5F6FA]">
+    <div className="min-h-screen bg-bergn-page-bg">
       <header className="bg-white border-b">
         <div className="mx-auto max-w-6xl px-4 flex items-center justify-between h-14">
           <div className="flex items-center gap-4">

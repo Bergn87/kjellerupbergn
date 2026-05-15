@@ -16,7 +16,7 @@ export default function AdminMobileHeader({ tenantName, plan }: MobileHeaderProp
   return (
     <header className="flex items-center border-b bg-white px-4 py-3 md:hidden">
       <Sheet open={open} onOpenChange={setOpen}>
-        <SheetTrigger className="inline-flex items-center justify-center rounded-md p-2 hover:bg-gray-100">
+        <SheetTrigger className="inline-flex items-center justify-center rounded-md p-2 hover:bg-gray-100" aria-label="Åbn menu">
           <Menu className="h-5 w-5" />
         </SheetTrigger>
         <SheetContent side="left" className="w-60 p-0">

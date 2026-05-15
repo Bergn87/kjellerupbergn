@@ -61,7 +61,7 @@ export default async function EmbedPage({ params, searchParams }: PageProps) {
   }
 
   const priceConfig = (calculator?.price_config as unknown as TagrensPriceConfig) ?? DEFAULT_TAGRENS_PRICE_CONFIG
-  const primaryColor = color || tenant.primary_color || '#1B4332'
+  const primaryColor = color || tenant.primary_color || '#1B3C2E'
 
   // Sæt headers til at tillade iframe embedding
   const headersList = await headers()

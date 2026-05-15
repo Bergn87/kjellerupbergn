@@ -79,7 +79,7 @@ export default function TemplatesPage() {
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <h1 className="text-2xl font-bold tracking-tight">Skabeloner</h1>
-        <Button onClick={handleSave} disabled={saving} className="bg-[#1B3C2E] hover:bg-[#152F24]">
+        <Button onClick={handleSave} disabled={saving} className="bg-primary hover:bg-primary/90">
           {saving ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Save className="mr-2 h-4 w-4" />}
           {saved ? 'Gemt!' : 'Gem alle skabeloner'}
         </Button>
@@ -89,13 +89,13 @@ export default function TemplatesPage() {
         Tilpas tekster i emails, SMS-beskeder og handelsbetingelser. Brug {'{{variabler}}'} til dynamisk indhold.
       </p>
 
-      <div className="rounded-lg border border-[#E8EAF0] bg-gray-50 p-4 text-xs text-muted-foreground">
+      <div className="rounded-lg border border-bergn-card-border bg-gray-50 p-4 text-xs text-muted-foreground">
         <strong>Tilgængelige variabler:</strong> {'{{kunde_navn}}'}, {'{{firma_navn}}'}, {'{{firma_telefon}}'}, {'{{tilbud_nummer}}'}, {'{{tilbud_link}}'}, {'{{tilbud_udloeber}}'}
       </div>
 
       <div className="space-y-4">
         {TEMPLATE_FIELDS.map((field) => (
-          <Card key={field.key} className="border border-[#E8EAF0]">
+          <Card key={field.key} className="border border-bergn-card-border">
             <CardContent className="pt-5 space-y-2">
               <Label className="text-sm font-medium">{field.label}</Label>
               {field.type === 'input' ? (
@@ -115,7 +115,7 @@ export default function TemplatesPage() {
         ))}
       </div>
 
-      <Button onClick={handleSave} disabled={saving} className="w-full bg-[#1B3C2E] hover:bg-[#152F24]">
+      <Button onClick={handleSave} disabled={saving} className="w-full bg-primary hover:bg-primary/90">
         {saving ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Save className="mr-2 h-4 w-4" />}
         {saved ? 'Gemt!' : 'Gem alle skabeloner'}
       </Button>

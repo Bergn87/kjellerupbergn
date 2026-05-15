@@ -41,9 +41,9 @@ export default function ServiceLandingTemplate({
       <section className="bg-white pt-28 pb-16 md:pt-36 md:pb-20">
         <div className="mx-auto max-w-6xl px-4">
           <div className="max-w-2xl">
-            <p className="text-sm font-semibold text-[#1B3C2E] uppercase tracking-wider mb-3">{service}</p>
+            <p className="text-sm font-semibold text-primary uppercase tracking-wider mb-3">{service}</p>
             <h1 className="text-4xl md:text-5xl font-extrabold leading-[1.1] tracking-tight text-gray-900">
-              {headline} <span className="text-[#D4A843]">{headlineAccent}</span>
+              {headline} <span className="text-bergn-accent">{headlineAccent}</span>
             </h1>
             <p className="mt-5 text-lg text-gray-500 max-w-lg leading-relaxed">{subtext}</p>
           </div>
@@ -52,15 +52,15 @@ export default function ServiceLandingTemplate({
 
       {/* Benefits */}
       <FadeIn>
-        <section className="py-16 bg-[#F5F6FA]">
+        <section className="py-16 bg-bergn-page-bg">
           <div className="mx-auto max-w-6xl px-4">
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
               {benefits.map((b) => {
                 const Icon = b.icon
                 return (
                   <div key={b.title} className="rounded-xl bg-white border border-gray-200 p-6 text-left">
-                    <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-[#1B3C2E]/10 mb-3">
-                      <Icon className="h-5 w-5 text-[#1B3C2E]" />
+                    <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-primary/10 mb-3">
+                      <Icon className="h-5 w-5 text-primary" />
                     </div>
                     <h3 className="text-base font-bold text-gray-900 mb-1">{b.title}</h3>
                     <p className="text-sm text-gray-600 leading-relaxed">{b.desc}</p>
@@ -88,7 +88,7 @@ export default function ServiceLandingTemplate({
       {/* FAQ */}
       {faqItems.length > 0 && (
         <FadeIn>
-          <section className="py-16 bg-[#F5F6FA]">
+          <section className="py-16 bg-bergn-page-bg">
             <div className="mx-auto max-w-3xl px-4">
               <h2 className="text-2xl font-extrabold text-gray-900 mb-8 text-center">Ofte stillede spørgsmål</h2>
               <div className="space-y-3">
@@ -108,11 +108,11 @@ export default function ServiceLandingTemplate({
       )}
 
       {/* Cross-sell CTA */}
-      <section className="py-16 bg-[#1B3C2E] text-white text-center">
+      <section className="py-16 bg-primary text-white text-center">
         <div className="mx-auto max-w-2xl px-4">
           <h2 className="text-2xl md:text-3xl font-extrabold mb-3">Klar til at få din egen beregner?</h2>
           <p className="text-white/60 mb-6">Opsæt din prisberegner på 10 minutter. Dine kunder beregner pris — du modtager leads.</p>
-          <Link href="/signup" className="inline-flex items-center gap-2 rounded-lg bg-[#E8500A] px-6 py-3 font-semibold text-white hover:bg-[#d04609] transition-colors">
+          <Link href="/signup" className="inline-flex items-center gap-2 rounded-lg bg-bergn-cta px-6 py-3 font-semibold text-white hover:bg-bergn-cta-hover transition-colors">
             Start gratis i 14 dage <ArrowRight className="h-4 w-4" />
           </Link>
         </div>
@@ -121,7 +121,7 @@ export default function ServiceLandingTemplate({
       {/* Mini footer */}
       <footer className="border-t bg-white py-8">
         <div className="mx-auto max-w-6xl px-4 flex flex-col sm:flex-row items-center justify-between gap-4 text-sm text-gray-400">
-          <div className="font-bold text-gray-900">Bergn<span className="text-[#D4A843]">.dk</span></div>
+          <div className="font-bold text-gray-900">Bergn<span className="text-bergn-accent">.dk</span></div>
           <div className="flex gap-4">
             <Link href="/" className="hover:text-gray-700">Forside</Link>
             <Link href="/login" className="hover:text-gray-700">Log ind</Link>

@@ -34,7 +34,7 @@ export default async function TenantsPage({ searchParams }: PageProps) {
         <Input name="search" placeholder="Søg på firmanavn, email eller slug..." defaultValue={search} className="max-w-md" />
       </form>
 
-      <Card className="border border-[#E8EAF0]">
+      <Card className="border border-bergn-card-border">
         <CardContent className="p-0">
           <div className="divide-y">
             {(tenants as TenantRow[] | null)?.map((t) => (

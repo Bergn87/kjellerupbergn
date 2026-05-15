@@ -82,7 +82,7 @@ export default async function DashboardPage() {
       <div className="flex items-center justify-between">
         <h1 className="text-2xl font-bold tracking-tight">Dashboard</h1>
         <Link href="/admin/quotes/new">
-          <Button className="bg-[#1B3C2E] hover:bg-[#152F24]">
+          <Button className="bg-primary hover:bg-primary/90">
             <Plus className="mr-2 h-4 w-4" />
             Opret nyt tilbud
           </Button>
@@ -113,7 +113,7 @@ async function DashboardContent({
     <>
       {/* KPI-KORT */}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
-        <Card className="border border-[#E8EAF0]">
+        <Card className="border border-bergn-card-border">
           <CardContent className="pt-5 pb-4 px-5">
             <p className="text-[11px] font-semibold uppercase tracking-wider text-gray-400">Alle foresp&oslash;rgsler</p>
             <p className="text-3xl font-bold text-gray-900 mt-1">{data.totalQuotes}</p>
@@ -121,7 +121,7 @@ async function DashboardContent({
           </CardContent>
         </Card>
 
-        <Card className="border border-[#E8EAF0]">
+        <Card className="border border-bergn-card-border">
           <CardContent className="pt-5 pb-4 px-5">
             <p className="text-[11px] font-semibold uppercase tracking-wider text-gray-400">Afventer svar</p>
             <p className="text-3xl font-bold text-gray-900 mt-1">{data.pendingQuotes}</p>
@@ -129,7 +129,7 @@ async function DashboardContent({
           </CardContent>
         </Card>
 
-        <Card className="border border-[#E8EAF0]">
+        <Card className="border border-bergn-card-border">
           <CardContent className="pt-5 pb-4 px-5">
             <p className="text-[11px] font-semibold uppercase tracking-wider text-gray-400">Accepterede</p>
             <p className="text-3xl font-bold text-gray-900 mt-1">{data.acceptedThisMonth}</p>
@@ -137,7 +137,7 @@ async function DashboardContent({
           </CardContent>
         </Card>
 
-        <Card className="border border-[#E8EAF0]">
+        <Card className="border border-bergn-card-border">
           <CardContent className="pt-5 pb-4 px-5">
             <p className="text-[11px] font-semibold uppercase tracking-wider text-gray-400">Accepteret oms&aelig;tning</p>
             <p className="text-3xl font-bold text-gray-900 mt-1">{formatKr(data.revenue)}</p>
@@ -147,7 +147,7 @@ async function DashboardContent({
       </div>
 
       {/* SENESTE FORESPØRGSLER */}
-      <Card className="border border-[#E8EAF0]">
+      <Card className="border border-bergn-card-border">
         <CardHeader className="flex flex-row items-center justify-between">
           <CardTitle className="text-base font-semibold">Seneste foresp&oslash;rgsler</CardTitle>
           <Link href="/admin/quotes" className="flex items-center gap-1 text-sm text-gray-500 hover:text-gray-900 transition-colors">
@@ -187,7 +187,7 @@ async function DashboardContent({
 
       {/* GRAF + KVOTE */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
-        <Card className="lg:col-span-2 border border-[#E8EAF0]">
+        <Card className="lg:col-span-2 border border-bergn-card-border">
           <CardHeader>
             <CardTitle className="text-sm font-medium text-gray-500">Tilbud per dag (30 dage)</CardTitle>
           </CardHeader>
@@ -196,7 +196,7 @@ async function DashboardContent({
               {data.dailyData.map((d) => (
                 <div key={d.date} className="flex-1 flex flex-col items-center justify-end h-full group relative">
                   <div
-                    className="w-full rounded-t bg-[#1B3C2E]/70 hover:bg-[#1B3C2E] transition-colors min-h-[2px]"
+                    className="w-full rounded-t bg-primary/70 hover:bg-primary transition-colors min-h-[2px]"
                     style={{ height: `${Math.max((d.count / maxDaily) * 100, 2)}%` }}
                   />
                   <div className="absolute bottom-full mb-1 hidden group-hover:block bg-gray-800 text-white text-xs rounded px-2 py-1 whitespace-nowrap z-10">
@@ -208,7 +208,7 @@ async function DashboardContent({
           </CardContent>
         </Card>
 
-        <Card className="border border-[#E8EAF0]">
+        <Card className="border border-bergn-card-border">
           <CardHeader>
             <CardTitle className="text-sm font-medium text-gray-500">M&aring;nedlig kvote</CardTitle>
           </CardHeader>
@@ -233,7 +233,7 @@ function DashboardSkeleton() {
     <div className="space-y-6">
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
         {[1, 2, 3, 4].map((i) => (
-          <Card key={i} className="border border-[#E8EAF0]">
+          <Card key={i} className="border border-bergn-card-border">
             <CardContent className="pt-5 pb-4 px-5">
               <div className="h-3 w-24 bg-gray-200 rounded animate-pulse mb-3" />
               <div className="h-8 w-16 bg-gray-200 rounded animate-pulse" />

@@ -57,7 +57,7 @@ const initialState: OnboardingState = {
   accountCreated: false, emailConfirmed: false,
   companyName: '', companyCvr: '', companyPhone: '', companyEmail: '',
   calculatorTypes: [],
-  logoUrl: null, primaryColor: '#1B4332',
+  logoUrl: null, primaryColor: '#1B3C2E',
   senderEmail: '', smsSenderName: '',
   isLoading: false, error: null,
 }
@@ -87,7 +87,7 @@ const CALC_TYPE_OPTIONS = [
   { type: 'generisk', label: 'Andet', icon: Settings },
 ]
 
-const COLOR_PRESETS = ['#1B4332', '#1e3a5f', '#7c2d12', '#581c87', '#0f766e', '#92400e', '#be123c', '#1d4ed8']
+const COLOR_PRESETS = ['#1B3C2E', '#1e3a5f', '#7c2d12', '#581c87', '#0f766e', '#92400e', '#be123c', '#1d4ed8']
 
 // ============================================
 // COMPONENT
@@ -117,7 +117,6 @@ export default function OnboardingPage() {
   useEffect(() => {
     const saved = loadSavedState()
     if (saved.step > 1) {
-      // Restore alle felter
       Object.entries(saved).forEach(([key, value]) => {
         if (key !== 'isLoading' && key !== 'error' && value !== initialState[key as keyof OnboardingState]) {
           dispatch({ type: 'SET_FIELD', field: key, value })
@@ -127,6 +126,22 @@ export default function OnboardingPage() {
     }
     setHydrated(true)
   }, [])
+
+  // P0 fix: Detect eksisterende session og spring trin 1 over.
+  // Logget-ind brugere uden tenant redirectes hertil via admin layout.
+  // Uden dette fix ser de signup-formularen igen.
+  useEffect(() => {
+    if (!hydrated || state.step !== 1 || state.accountCreated) return
+    supabase.auth.getUser().then(({ data: { user } }) => {
+      if (user?.email) {
+        dispatch({ type: 'SET_FIELD', field: 'email', value: user.email })
+        dispatch({ type: 'SET_FIELD', field: 'accountCreated', value: true })
+        dispatch({ type: 'SET_FIELD', field: 'emailConfirmed', value: true })
+        dispatch({ type: 'SET_FIELD', field: 'companyEmail', value: user.email })
+        dispatch({ type: 'SET_STEP', step: 2 })
+      }
+    })
+  }, [hydrated, state.step, state.accountCreated]) // eslint-disable-line react-hooks/exhaustive-deps -- supabase client is a singleton
 
   // Persist state til localStorage
   useEffect(() => {
@@ -228,7 +243,7 @@ export default function OnboardingPage() {
   // ============================================
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-[#1B3C2E] to-[#152F24] flex flex-col items-center justify-center px-4 py-8">
+    <div className="min-h-screen bg-gradient-to-br from-primary to-primary/90 flex flex-col items-center justify-center px-4 py-8">
       {/* Logo */}
       <div className="mb-6">
         <span className="text-2xl font-bold text-white">Bergn.dk</span>
@@ -337,7 +352,7 @@ export default function OnboardingPage() {
                     />
                   ))}
                 </div>
-                <Input type="text" value={state.primaryColor} onChange={(e) => set('primaryColor', e.target.value)} placeholder="#1B4332" className="max-w-[140px] mt-2" />
+                <Input type="text" value={state.primaryColor} onChange={(e) => set('primaryColor', e.target.value)} placeholder="#1B3C2E" className="max-w-[140px] mt-2" />
               </div>
               <Separator />
               <div className="rounded-lg border p-4" style={{ borderColor: state.primaryColor }}>
@@ -440,7 +455,7 @@ export default function OnboardingPage() {
               </div>
               <div className="flex gap-2">
                 <Button variant="outline" onClick={prevStep}><ChevronLeft className="h-4 w-4" /></Button>
-                <Button className="flex-1 text-white" style={{ backgroundColor: '#E8500A' }} onClick={handleComplete} disabled={state.isLoading}>
+                <Button className="flex-1 text-white bg-bergn-cta" onClick={handleComplete} disabled={state.isLoading}>
                   {state.isLoading ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : null}
                   Start min 14-dages prøveperiode <ChevronRight className="ml-2 h-4 w-4" />
                 </Button>

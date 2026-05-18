@@ -4,6 +4,7 @@ import { Suspense, useState } from 'react'
 import { useRouter, useSearchParams } from 'next/navigation'
 import Link from 'next/link'
 import { createClient } from '@/lib/supabase/client'
+import { checkUserHasTenant } from '@/app/actions/auth'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
@@ -31,6 +32,7 @@ function LoginForm() {
   const [password, setPassword] = useState('')
   const [error, setError] = useState<string | null>(null)
   const [isLoading, setIsLoading] = useState(false)
+  const [needsOnboarding, setNeedsOnboarding] = useState(false)
   const router = useRouter()
   const searchParams = useSearchParams()
   const redirect = searchParams.get('redirect')
@@ -38,6 +40,7 @@ function LoginForm() {
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault()
     setError(null)
+    setNeedsOnboarding(false)
     setIsLoading(true)
 
     try {
@@ -49,6 +52,13 @@ function LoginForm() {
 
       if (signInError) {
         setError('Forkert email eller adgangskode')
+        return
+      }
+
+      // Tjek om brugeren har en virksomhed oprettet
+      const result = await checkUserHasTenant()
+      if (result && !result.hasTenant) {
+        setNeedsOnboarding(true)
         return
       }
 
@@ -75,6 +85,22 @@ function LoginForm() {
             <Alert variant="destructive">
               <AlertDescription>{error}</AlertDescription>
             </Alert>
+          )}
+          {needsOnboarding && (
+            <div className="rounded-lg border border-amber-200 bg-amber-50 p-4 space-y-3">
+              <p className="text-sm font-medium text-amber-900">
+                Du er logget ind, men din virksomhed er ikke oprettet endnu.
+              </p>
+              <p className="text-sm text-amber-700">
+                For at bruge dashboardet skal du først oprette din virksomhedsprofil.
+              </p>
+              <Link
+                href={`/onboarding?email=${encodeURIComponent(email)}`}
+                className="inline-flex items-center justify-center rounded-lg bg-primary px-4 py-2 text-sm font-semibold text-white hover:bg-primary/90 transition-colors"
+              >
+                Opret virksomhed →
+              </Link>
+            </div>
           )}
           <div className="space-y-2">
             <Label htmlFor="email">Email</Label>

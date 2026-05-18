@@ -68,11 +68,11 @@ export async function middleware(request: NextRequest) {
 
   // d) Redirect logik for logged-in brugere
   if (user) {
-    // Hvis logget ind og på /login eller /signup → tjek om bruger har tenant
-    if (pathname === '/login' || pathname === '/signup') {
+    // Kun /signup redirectes — logget-ind brugere skal ikke oprette ny konto.
+    // /login redirectes IKKE: brugeren kan have en session men ingen tenant,
+    // og skal kunne se login-siden (eller logge ind som en anden bruger).
+    if (pathname === '/signup') {
       const url = request.nextUrl.clone()
-      // Vi kan ikke kalde DB i middleware effektivt,
-      // så vi redirecter til dashboard — admin layout håndterer onboarding-redirect
       url.pathname = '/admin/dashboard'
       return NextResponse.redirect(url, {
         headers: response.headers,

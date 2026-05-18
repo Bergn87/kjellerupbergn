@@ -10,10 +10,22 @@ export default async function AdminLayout({
 }: {
   children: React.ReactNode
 }) {
-  const user = await getCurrentUser()
+  let user, tenant
+
+  try {
+    user = await getCurrentUser()
+  } catch (e) {
+    console.error('[AdminLayout] getCurrentUser failed:', e)
+    redirect('/login')
+  }
   if (!user) redirect('/login')
 
-  const tenant = await getCurrentTenant()
+  try {
+    tenant = await getCurrentTenant()
+  } catch (e) {
+    console.error('[AdminLayout] getCurrentTenant failed:', e)
+    throw new Error(`Kunne ikke hente virksomhed: ${e instanceof Error ? e.message : String(e)}`)
+  }
   if (!tenant) redirect(`/onboarding?email=${encodeURIComponent(user.email ?? '')}`)
 
   return (

@@ -6,21 +6,10 @@ import { getCurrentUser } from '@/lib/supabase/helpers'
 import { DEFAULT_TAGRENS_PRICE_CONFIG } from '@/lib/calculators/tagrens'
 
 interface OnboardingData {
-  // Trin 2
   companyName: string
   companyCvr: string
   companyPhone: string
   companyEmail: string
-  // Trin 3
-  calculatorTypes: string[]
-  // Trin 4
-  logoUrl: string | null
-  primaryColor: string
-  // Trin 5
-  priceConfig: Record<string, unknown> | null
-  // Trin 6
-  senderEmail: string
-  smsSenderName: string
 }
 
 export async function completeOnboarding(data: OnboardingData) {
@@ -46,7 +35,7 @@ export async function completeOnboarding(data: OnboardingData) {
 
   const finalSlug = existing ? `${slug}-${Date.now().toString(36).slice(-4)}` : slug
 
-  // 2. Opret tenant
+  // 2. Opret tenant med standardindstillinger
   const { data: tenant, error: tenantError } = await supabase
     .from('tenants')
     .insert({
@@ -55,15 +44,14 @@ export async function completeOnboarding(data: OnboardingData) {
       company_cvr: data.companyCvr || null,
       company_phone: data.companyPhone || null,
       company_email: data.companyEmail || user.email,
-      company_logo_url: data.logoUrl,
-      primary_color: data.primaryColor || '#1B3C2E',
+      company_logo_url: null,
+      primary_color: '#1B3C2E',
     } as never)
     .select('id')
     .single<{ id: string }>()
 
   if (tenantError || !tenant) {
     console.error('Tenant oprettelse fejl:', JSON.stringify(tenantError, null, 2))
-    console.error('Tenant data var:', JSON.stringify({ slug: finalSlug, companyName: data.companyName, companyEmail: data.companyEmail }))
     throw new Error(`Kunne ikke oprette virksomhed: ${tenantError?.message ?? 'ukendt fejl'}`)
   }
 
@@ -76,30 +64,16 @@ export async function completeOnboarding(data: OnboardingData) {
       role: 'owner',
     } as never)
 
-  // 4. Opret calculators for valgte typer
-  const calcTypes = data.calculatorTypes.length > 0 ? data.calculatorTypes : ['tagrens']
-
-  for (const type of calcTypes) {
-    const name = type === 'tagrens' ? 'Tagrens' :
-                 type === 'maler' ? 'Malerarbejde' :
-                 type === 'fliserens' ? 'Fliserens' :
-                 type === 'vinduespolering' ? 'Vinduespolering' :
-                 type === 'isolering' ? 'Isolering' : 'Beregner'
-
-    const priceConfig = type === 'tagrens'
-      ? (data.priceConfig ?? DEFAULT_TAGRENS_PRICE_CONFIG)
-      : {}
-
-    await supabase
-      .from('calculators')
-      .insert({
-        tenant_id: tenant.id,
-        type,
-        name,
-        slug: type,
-        price_config: priceConfig,
-      } as never)
-  }
+  // 4. Opret standard tagrens-beregner (brugeren tilføjer flere i admin)
+  await supabase
+    .from('calculators')
+    .insert({
+      tenant_id: tenant.id,
+      type: 'tagrens',
+      name: 'Tagrens',
+      slug: 'tagrens',
+      price_config: DEFAULT_TAGRENS_PRICE_CONFIG,
+    } as never)
 
   // 5. Seed standard reminder_rules
   await supabase
@@ -131,15 +105,6 @@ export async function completeOnboarding(data: OnboardingData) {
   // 6. Seed tenant_settings
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   await (supabase.rpc as any)('seed_tenant_settings', { p_tenant_id: tenant.id })
-
-  // Opdatér SMS sender name
-  if (data.smsSenderName) {
-    await supabase
-      .from('tenant_settings')
-      .update({ value: data.smsSenderName } as never)
-      .eq('tenant_id', tenant.id)
-      .eq('key', 'sms_sender_name')
-  }
 
   redirect('/admin/dashboard')
 }

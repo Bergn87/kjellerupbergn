@@ -9,36 +9,25 @@ import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Button } from '@/components/ui/button'
 import { Progress } from '@/components/ui/progress'
-import { Separator } from '@/components/ui/separator'
-import { Loader2, ChevronRight, ChevronLeft, Check, Home, Paintbrush, Droplets, Sparkles, Settings, Rocket } from 'lucide-react'
-import { cn } from '@/lib/utils'
-import { DEFAULT_TAGRENS_PRICE_CONFIG } from '@/lib/calculators/tagrens'
+import { Loader2, ChevronRight, ChevronLeft, Check } from 'lucide-react'
 
 // ============================================
-// STATE
+// STATE — kun konto + firma
 // ============================================
 
 interface OnboardingState {
   step: number
-  // Trin 1
+  // Trin 1: Konto
   email: string
   password: string
   confirmPassword: string
   accountCreated: boolean
   emailConfirmed: boolean
-  // Trin 2
+  // Trin 2: Firma
   companyName: string
   companyCvr: string
   companyPhone: string
   companyEmail: string
-  // Trin 3
-  calculatorTypes: string[]
-  // Trin 4
-  logoUrl: string | null
-  primaryColor: string
-  // Trin 5
-  senderEmail: string
-  smsSenderName: string
   // General
   isLoading: boolean
   error: string | null
@@ -49,16 +38,12 @@ type Action =
   | { type: 'SET_STEP'; step: number }
   | { type: 'SET_LOADING'; loading: boolean }
   | { type: 'SET_ERROR'; error: string | null }
-  | { type: 'TOGGLE_CALC_TYPE'; calcType: string }
 
 const initialState: OnboardingState = {
   step: 1,
   email: '', password: '', confirmPassword: '',
   accountCreated: false, emailConfirmed: false,
   companyName: '', companyCvr: '', companyPhone: '', companyEmail: '',
-  calculatorTypes: [],
-  logoUrl: null, primaryColor: '#1B3C2E',
-  senderEmail: '', smsSenderName: '',
   isLoading: false, error: null,
 }
 
@@ -68,39 +53,8 @@ function reducer(state: OnboardingState, action: Action): OnboardingState {
     case 'SET_STEP': return { ...state, step: action.step, error: null }
     case 'SET_LOADING': return { ...state, isLoading: action.loading }
     case 'SET_ERROR': return { ...state, error: action.error }
-    case 'TOGGLE_CALC_TYPE': {
-      const types = state.calculatorTypes.includes(action.calcType)
-        ? state.calculatorTypes.filter((t) => t !== action.calcType)
-        : [...state.calculatorTypes, action.calcType]
-      return { ...state, calculatorTypes: types }
-    }
     default: return state
   }
-}
-
-const CALC_TYPE_OPTIONS = [
-  { type: 'tagrens', label: 'Tagrens & Tagmaling', icon: Home },
-  { type: 'maler', label: 'Malerarbejde', icon: Paintbrush },
-  { type: 'fliserens', label: 'Fliserens', icon: Droplets },
-  { type: 'vinduespolering', label: 'Vinduespolering', icon: Sparkles },
-  { type: 'isolering', label: 'Isolering', icon: Home },
-  { type: 'generisk', label: 'Andet', icon: Settings },
-]
-
-const COLOR_PRESETS = ['#1B3C2E', '#1e3a5f', '#7c2d12', '#581c87', '#0f766e', '#92400e', '#be123c', '#1d4ed8']
-
-// ============================================
-// STEP MIGRATION
-// ============================================
-// Old flow had 8 steps. New flow has 6 steps.
-// Old: 1-Konto, 2-Firma, 3-Typer, 4-Brand, 5-Priser, 6-Kommunikation, 7-URL, 8-Test
-// New: 1-Konto, 2-Firma, 3-Typer, 4-Brand, 5-Kommunikation, 6-Opsummering
-// Map old steps to new to avoid stuck users with localStorage from the old flow.
-function migrateStep(savedStep: number): number {
-  if (savedStep <= 4) return savedStep    // Steps 1-4 unchanged
-  if (savedStep === 5) return 5           // Old pricing → new communication
-  if (savedStep === 6) return 5           // Old communication → new communication
-  return 6                                // Old 7/8 → new summary
 }
 
 // ============================================
@@ -108,6 +62,7 @@ function migrateStep(savedStep: number): number {
 // ============================================
 
 const STORAGE_KEY = 'bergn-onboarding'
+const TOTAL_STEPS = 2
 
 function loadSavedState(): OnboardingState {
   if (typeof window === 'undefined') return initialState
@@ -136,9 +91,7 @@ function OnboardingContent() {
   const supabase = createClient()
   const searchParams = useSearchParams()
 
-  const totalSteps = 6
-
-  // Hydrate state fra localStorage + detect eksisterende session
+  // Hydrate fra localStorage + detect eksisterende session
   useEffect(() => {
     const saved = loadSavedState()
     if (saved.step > 1) {
@@ -147,12 +100,11 @@ function OnboardingContent() {
           dispatch({ type: 'SET_FIELD', field: key, value })
         }
       })
-      // Migrate from old 8-step flow if needed
-      const targetStep = saved.step > totalSteps ? migrateStep(saved.step) : saved.step
-      dispatch({ type: 'SET_STEP', step: Math.min(targetStep, totalSteps) })
+      // Clamp til max 2 steps (migration fra ældre flows)
+      dispatch({ type: 'SET_STEP', step: Math.min(saved.step, TOTAL_STEPS) })
     }
 
-    // P0 fix: Admin layout redirecter hertil med ?email= naar brugeren
+    // Admin layout redirecter hertil med ?email= naar brugeren
     // er logget ind men ikke har en tenant. Spring trin 1 over.
     const returningEmail = searchParams.get('email')
     if (saved.step <= 1 && !saved.accountCreated && returningEmail) {
@@ -171,15 +123,12 @@ function OnboardingContent() {
   useEffect(() => {
     if (!hydrated) return
     const { isLoading, error, ...rest } = state
-    void isLoading; void error;
+    void isLoading; void error
     localStorage.setItem(STORAGE_KEY, JSON.stringify(rest))
   }, [state, hydrated])
 
-  const progress = Math.round((state.step / totalSteps) * 100)
-
+  const progress = Math.round((state.step / TOTAL_STEPS) * 100)
   const set = (field: string, value: unknown) => dispatch({ type: 'SET_FIELD', field, value })
-  const nextStep = () => dispatch({ type: 'SET_STEP', step: Math.min(state.step + 1, totalSteps) })
-  const prevStep = () => dispatch({ type: 'SET_STEP', step: Math.max(state.step - 1, 1) })
 
   // ── Trin 1: Opret konto ───────────────────
   async function handleSignUp() {
@@ -211,7 +160,6 @@ function OnboardingContent() {
   async function checkEmailConfirmed() {
     dispatch({ type: 'SET_LOADING', loading: true })
 
-    // Log ind med password — dette fejler hvis email ikke er bekræftet
     const { data: signInData, error: signInError } = await supabase.auth.signInWithPassword({
       email: state.email,
       password: state.password,
@@ -220,7 +168,6 @@ function OnboardingContent() {
     dispatch({ type: 'SET_LOADING', loading: false })
 
     if (signInError) {
-      // "Email not confirmed" fejl fra Supabase
       if (signInError.message.toLowerCase().includes('email')) {
         dispatch({ type: 'SET_ERROR', error: 'Email er endnu ikke bekræftet. Tjek din indbakke og klik linket.' })
       } else {
@@ -232,11 +179,11 @@ function OnboardingContent() {
     if (signInData.user) {
       set('emailConfirmed', true)
       set('companyEmail', state.email)
-      nextStep()
+      dispatch({ type: 'SET_STEP', step: 2 })
     }
   }
 
-  // ── Trin 6: Fuldfør ───────────────────────
+  // ── Trin 2: Opret virksomhed & gå til dashboard ──
   async function handleComplete() {
     dispatch({ type: 'SET_LOADING', loading: true })
     try {
@@ -244,24 +191,14 @@ function OnboardingContent() {
         companyName: state.companyName,
         companyCvr: state.companyCvr,
         companyPhone: state.companyPhone,
-        companyEmail: state.companyEmail,
-        calculatorTypes: state.calculatorTypes,
-        logoUrl: state.logoUrl,
-        primaryColor: state.primaryColor,
-        priceConfig: DEFAULT_TAGRENS_PRICE_CONFIG as unknown as Record<string, unknown>,
-        senderEmail: state.senderEmail || state.companyEmail,
-        smsSenderName: state.smsSenderName || 'Bergn',
+        companyEmail: state.companyEmail || state.email,
       })
-      // Clear localStorage on success (redirect happens server-side)
       localStorage.removeItem(STORAGE_KEY)
     } catch (err) {
       dispatch({ type: 'SET_LOADING', loading: false })
       dispatch({ type: 'SET_ERROR', error: err instanceof Error ? err.message : 'Der opstod en fejl' })
     }
   }
-
-  const slug = state.companyName
-    .toLowerCase().replace(/[^a-zæøå0-9]/g, '-').replace(/-+/g, '-').replace(/^-|-$/g, '').slice(0, 40) || 'din-virksomhed'
 
   // ============================================
   // RENDER
@@ -280,7 +217,6 @@ function OnboardingContent() {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-primary to-primary/90 flex flex-col items-center justify-center px-4 py-8">
-      {/* Logo */}
       <div className="mb-6">
         <span className="text-2xl font-bold text-white">Bergn.dk</span>
       </div>
@@ -288,7 +224,7 @@ function OnboardingContent() {
       {/* Progress */}
       <div className="w-full max-w-lg mb-4">
         <div className="flex justify-between text-xs text-white/60 mb-1">
-          <span>Trin {state.step} af {totalSteps}</span>
+          <span>Trin {state.step} af {TOTAL_STEPS}</span>
           <span>{progress}%</span>
         </div>
         <Progress value={progress} className="h-2" />
@@ -306,15 +242,28 @@ function OnboardingContent() {
           {/* ── TRIN 1: Opret konto ────────── */}
           {state.step === 1 && (
             <div className="space-y-4">
-              <div><h2 className="text-xl font-bold">Opret din konto</h2><p className="text-sm text-muted-foreground">Kom i gang på under 3 minutter</p></div>
+              <div>
+                <h2 className="text-xl font-bold">Opret din konto</h2>
+                <p className="text-sm text-muted-foreground">Kom i gang på under 2 minutter</p>
+              </div>
 
               {!state.accountCreated ? (
                 <>
-                  <div className="space-y-2"><Label>Email</Label><Input type="email" value={state.email} onChange={(e) => set('email', e.target.value)} placeholder="din@email.dk" /></div>
-                  <div className="space-y-2"><Label>Adgangskode</Label><Input type="password" value={state.password} onChange={(e) => set('password', e.target.value)} placeholder="Min. 8 tegn, mindst ét tal" /></div>
-                  <div className="space-y-2"><Label>Bekræft adgangskode</Label><Input type="password" value={state.confirmPassword} onChange={(e) => set('confirmPassword', e.target.value)} /></div>
+                  <div className="space-y-2">
+                    <Label>Email</Label>
+                    <Input type="email" value={state.email} onChange={(e) => set('email', e.target.value)} placeholder="din@email.dk" />
+                  </div>
+                  <div className="space-y-2">
+                    <Label>Adgangskode</Label>
+                    <Input type="password" value={state.password} onChange={(e) => set('password', e.target.value)} placeholder="Min. 8 tegn, mindst ét tal" />
+                  </div>
+                  <div className="space-y-2">
+                    <Label>Bekræft adgangskode</Label>
+                    <Input type="password" value={state.confirmPassword} onChange={(e) => set('confirmPassword', e.target.value)} />
+                  </div>
                   <Button className="w-full" onClick={handleSignUp} disabled={state.isLoading || !state.email || !state.password}>
-                    {state.isLoading ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : null}Opret konto
+                    {state.isLoading ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : null}
+                    Opret konto
                   </Button>
                 </>
               ) : (
@@ -325,156 +274,48 @@ function OnboardingContent() {
                     <p className="text-sm text-green-700 mt-1">Klik bekræftelseslinket vi sendte til {state.email}</p>
                   </div>
                   <Button className="w-full" onClick={checkEmailConfirmed} disabled={state.isLoading}>
-                    {state.isLoading ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : null}Jeg har bekræftet min email <ChevronRight className="ml-2 h-4 w-4" />
+                    {state.isLoading ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : null}
+                    Jeg har bekræftet min email <ChevronRight className="ml-2 h-4 w-4" />
                   </Button>
                 </>
               )}
             </div>
           )}
 
-          {/* ── TRIN 2: Virksomhed ─────────── */}
+          {/* ── TRIN 2: Firmaoplysninger & start ── */}
           {state.step === 2 && (
             <div className="space-y-4">
-              <div><h2 className="text-xl font-bold">Din virksomhed</h2></div>
-              <div className="space-y-2"><Label>Firmanavn *</Label><Input value={state.companyName} onChange={(e) => set('companyName', e.target.value)} placeholder="Jensens Tagservice" /></div>
-              <div className="space-y-2"><Label>CVR</Label><Input value={state.companyCvr} onChange={(e) => set('companyCvr', e.target.value)} placeholder="12345678" maxLength={8} /></div>
-              <div className="space-y-2"><Label>Telefon</Label><Input type="tel" value={state.companyPhone} onChange={(e) => set('companyPhone', e.target.value)} placeholder="12 34 56 78" /></div>
-              <div className="space-y-2"><Label>Email</Label><Input type="email" value={state.companyEmail} onChange={(e) => set('companyEmail', e.target.value)} /></div>
-              <div className="flex gap-2">
-                <Button variant="outline" onClick={prevStep}><ChevronLeft className="h-4 w-4" /></Button>
-                <Button className="flex-1" onClick={nextStep} disabled={!state.companyName}>Fortsæt <ChevronRight className="ml-2 h-4 w-4" /></Button>
+              <div>
+                <h2 className="text-xl font-bold">Din virksomhed</h2>
+                <p className="text-sm text-muted-foreground">Du kan tilpasse alt andet i admin-panelet bagefter</p>
               </div>
-            </div>
-          )}
 
-          {/* ── TRIN 3: Hvad tilbyder du? ──── */}
-          {state.step === 3 && (
-            <div className="space-y-4">
-              <div><h2 className="text-xl font-bold">Hvad tilbyder du?</h2><p className="text-sm text-muted-foreground">Vælg en eller flere — du kan tilføje flere senere</p></div>
-              <div className="grid grid-cols-2 gap-3">
-                {CALC_TYPE_OPTIONS.map((ct) => {
-                  const Icon = ct.icon
-                  const selected = state.calculatorTypes.includes(ct.type)
-                  return (
-                    <button key={ct.type} type="button"
-                      className={cn('flex flex-col items-center gap-2 rounded-lg border-2 p-4 transition-colors', selected ? 'border-primary bg-primary/5' : 'border-gray-200 hover:border-gray-300')}
-                      onClick={() => dispatch({ type: 'TOGGLE_CALC_TYPE', calcType: ct.type })}
-                    >
-                      <Icon className={cn('h-6 w-6', selected ? 'text-primary' : 'text-muted-foreground')} />
-                      <span className="text-sm font-medium text-center">{ct.label}</span>
-                    </button>
-                  )
-                })}
-              </div>
-              <div className="flex gap-2">
-                <Button variant="outline" onClick={prevStep}><ChevronLeft className="h-4 w-4" /></Button>
-                <Button className="flex-1" onClick={nextStep}>Fortsæt <ChevronRight className="ml-2 h-4 w-4" /></Button>
-              </div>
-            </div>
-          )}
-
-          {/* ── TRIN 4: Tilpas udtryk ──────── */}
-          {state.step === 4 && (
-            <div className="space-y-4">
-              <div><h2 className="text-xl font-bold">Tilpas dit udtryk</h2></div>
               <div className="space-y-2">
-                <Label>Primærfarve</Label>
-                <div className="flex flex-wrap gap-2">
-                  {COLOR_PRESETS.map((c) => (
-                    <button key={c} type="button"
-                      className={cn('h-10 w-10 rounded-lg border-2 transition-all', state.primaryColor === c ? 'border-black scale-110' : 'border-transparent')}
-                      style={{ backgroundColor: c }}
-                      onClick={() => set('primaryColor', c)}
-                    />
-                  ))}
-                </div>
-                <Input type="text" value={state.primaryColor} onChange={(e) => set('primaryColor', e.target.value)} placeholder="#1B3C2E" className="max-w-[140px] mt-2" />
-              </div>
-              <Separator />
-              <div className="rounded-lg border p-4" style={{ borderColor: state.primaryColor }}>
-                <p className="text-xs text-muted-foreground mb-2">Forhåndsvisning</p>
-                <div className="rounded-lg p-3" style={{ backgroundColor: state.primaryColor }}>
-                  <span className="text-white font-semibold text-sm">{state.companyName || 'Dit firmanavn'}</span>
-                </div>
-              </div>
-              <div className="flex gap-2">
-                <Button variant="outline" onClick={prevStep}><ChevronLeft className="h-4 w-4" /></Button>
-                <Button className="flex-1" onClick={nextStep}>Fortsæt <ChevronRight className="ml-2 h-4 w-4" /></Button>
-              </div>
-            </div>
-          )}
-
-          {/* ── TRIN 5: Kommunikation ──────── */}
-          {state.step === 5 && (
-            <div className="space-y-4">
-              <div><h2 className="text-xl font-bold">Kommunikation</h2><p className="text-sm text-muted-foreground">Indstillinger for tilbuds-emails og SMS</p></div>
-              <div className="space-y-2">
-                <Label>Afsender-email til tilbud</Label>
-                <Input type="email" value={state.senderEmail || state.companyEmail} onChange={(e) => set('senderEmail', e.target.value)} />
+                <Label>Firmanavn *</Label>
+                <Input value={state.companyName} onChange={(e) => set('companyName', e.target.value)} placeholder="Jensens Tagservice" />
               </div>
               <div className="space-y-2">
-                <Label>SMS-afsendernavn (max 11 tegn)</Label>
-                <Input value={state.smsSenderName} onChange={(e) => set('smsSenderName', e.target.value.slice(0, 11))} placeholder="Bergn" maxLength={11} />
-                <p className="text-xs text-muted-foreground">SMS sendes fra: <strong>{state.smsSenderName || 'Bergn'}</strong></p>
+                <Label>CVR</Label>
+                <Input value={state.companyCvr} onChange={(e) => set('companyCvr', e.target.value)} placeholder="12345678" maxLength={8} />
               </div>
-              <div className="flex gap-2">
-                <Button variant="outline" onClick={prevStep}><ChevronLeft className="h-4 w-4" /></Button>
-                <Button className="flex-1" onClick={nextStep}>Fortsæt <ChevronRight className="ml-2 h-4 w-4" /></Button>
+              <div className="space-y-2">
+                <Label>Telefon</Label>
+                <Input type="tel" value={state.companyPhone} onChange={(e) => set('companyPhone', e.target.value)} placeholder="12 34 56 78" />
               </div>
-            </div>
-          )}
-
-          {/* ── TRIN 6: Opsummering & Start ── */}
-          {state.step === 6 && (
-            <div className="space-y-4">
-              <div className="text-center">
-                <Rocket className="mx-auto mb-2 h-10 w-10 text-primary" />
-                <h2 className="text-xl font-bold">Alt er klar!</h2>
-                <p className="text-sm text-muted-foreground">Her er en oversigt over din opsætning</p>
+              <div className="space-y-2">
+                <Label>Email</Label>
+                <Input type="email" value={state.companyEmail} onChange={(e) => set('companyEmail', e.target.value)} placeholder={state.email} />
               </div>
-
-              <div className="space-y-2 rounded-lg border bg-gray-50 p-4 text-sm">
-                <div className="flex justify-between">
-                  <span className="text-muted-foreground">Virksomhed</span>
-                  <span className="font-medium">{state.companyName}</span>
-                </div>
-                {state.companyCvr && (
-                  <div className="flex justify-between">
-                    <span className="text-muted-foreground">CVR</span>
-                    <span className="font-medium">{state.companyCvr}</span>
-                  </div>
-                )}
-                <div className="flex justify-between">
-                  <span className="text-muted-foreground">Beregnere</span>
-                  <span className="font-medium">
-                    {state.calculatorTypes.length > 0
-                      ? state.calculatorTypes.map((t) =>
-                          CALC_TYPE_OPTIONS.find((o) => o.type === t)?.label ?? t
-                        ).join(', ')
-                      : 'Tagrens (standard)'}
-                  </span>
-                </div>
-                <div className="flex justify-between items-center">
-                  <span className="text-muted-foreground">Farve</span>
-                  <span className="flex items-center gap-2">
-                    <span className="inline-block h-4 w-4 rounded" style={{ backgroundColor: state.primaryColor }} />
-                    <span className="font-medium font-mono text-xs">{state.primaryColor}</span>
-                  </span>
-                </div>
-                <Separator />
-                <div className="flex justify-between">
-                  <span className="text-muted-foreground">Beregner-URL</span>
-                  <span className="font-medium font-mono text-xs">{slug}.bergn.dk</span>
-                </div>
-              </div>
-
-              <p className="text-xs text-muted-foreground text-center">
-                Priser, beregner-link og embed-kode kan du tilpasse i admin-panelet efter oprettelse.
-              </p>
 
               <div className="flex gap-2">
-                <Button variant="outline" onClick={prevStep}><ChevronLeft className="h-4 w-4" /></Button>
-                <Button className="flex-1 text-white bg-bergn-cta hover:bg-bergn-cta-hover" onClick={handleComplete} disabled={state.isLoading}>
+                <Button variant="outline" onClick={() => dispatch({ type: 'SET_STEP', step: 1 })}>
+                  <ChevronLeft className="h-4 w-4" />
+                </Button>
+                <Button
+                  className="flex-1 text-white bg-bergn-cta hover:bg-bergn-cta-hover"
+                  onClick={handleComplete}
+                  disabled={state.isLoading || !state.companyName}
+                >
                   {state.isLoading ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : null}
                   Start min 14-dages prøveperiode <ChevronRight className="ml-2 h-4 w-4" />
                 </Button>

@@ -10,7 +10,7 @@ import { Label } from '@/components/ui/label'
 import { Button } from '@/components/ui/button'
 import { Progress } from '@/components/ui/progress'
 import { Separator } from '@/components/ui/separator'
-import { Loader2, ChevronRight, ChevronLeft, Check, Copy, ExternalLink, Home, Paintbrush, Droplets, Sparkles, Settings } from 'lucide-react'
+import { Loader2, ChevronRight, ChevronLeft, Check, Home, Paintbrush, Droplets, Sparkles, Settings, Rocket } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import { DEFAULT_TAGRENS_PRICE_CONFIG } from '@/lib/calculators/tagrens'
 
@@ -36,8 +36,7 @@ interface OnboardingState {
   // Trin 4
   logoUrl: string | null
   primaryColor: string
-  // Trin 5 (price config beholder default)
-  // Trin 6
+  // Trin 5
   senderEmail: string
   smsSenderName: string
   // General
@@ -91,6 +90,20 @@ const CALC_TYPE_OPTIONS = [
 const COLOR_PRESETS = ['#1B3C2E', '#1e3a5f', '#7c2d12', '#581c87', '#0f766e', '#92400e', '#be123c', '#1d4ed8']
 
 // ============================================
+// STEP MIGRATION
+// ============================================
+// Old flow had 8 steps. New flow has 6 steps.
+// Old: 1-Konto, 2-Firma, 3-Typer, 4-Brand, 5-Priser, 6-Kommunikation, 7-URL, 8-Test
+// New: 1-Konto, 2-Firma, 3-Typer, 4-Brand, 5-Kommunikation, 6-Opsummering
+// Map old steps to new to avoid stuck users with localStorage from the old flow.
+function migrateStep(savedStep: number): number {
+  if (savedStep <= 4) return savedStep    // Steps 1-4 unchanged
+  if (savedStep === 5) return 5           // Old pricing → new communication
+  if (savedStep === 6) return 5           // Old communication → new communication
+  return 6                                // Old 7/8 → new summary
+}
+
+// ============================================
 // COMPONENT
 // ============================================
 
@@ -120,9 +133,10 @@ function OnboardingContent() {
   const [state, dispatch] = useReducer(reducer, initialState)
   const [hydrated, setHydrated] = useState(false)
   const [checkingSession, setCheckingSession] = useState(true)
-  const [copied, setCopied] = useState(false)
   const supabase = createClient()
   const searchParams = useSearchParams()
+
+  const totalSteps = 6
 
   // Hydrate state fra localStorage + detect eksisterende session
   useEffect(() => {
@@ -133,7 +147,9 @@ function OnboardingContent() {
           dispatch({ type: 'SET_FIELD', field: key, value })
         }
       })
-      dispatch({ type: 'SET_STEP', step: saved.step })
+      // Migrate from old 8-step flow if needed
+      const targetStep = saved.step > totalSteps ? migrateStep(saved.step) : saved.step
+      dispatch({ type: 'SET_STEP', step: Math.min(targetStep, totalSteps) })
     }
 
     // P0 fix: Admin layout redirecter hertil med ?email= naar brugeren
@@ -159,7 +175,6 @@ function OnboardingContent() {
     localStorage.setItem(STORAGE_KEY, JSON.stringify(rest))
   }, [state, hydrated])
 
-  const totalSteps = 8
   const progress = Math.round((state.step / totalSteps) * 100)
 
   const set = (field: string, value: unknown) => dispatch({ type: 'SET_FIELD', field, value })
@@ -221,7 +236,7 @@ function OnboardingContent() {
     }
   }
 
-  // ── Trin 8: Fuldfør ───────────────────────
+  // ── Trin 6: Fuldfør ───────────────────────
   async function handleComplete() {
     dispatch({ type: 'SET_LOADING', loading: true })
     try {
@@ -237,6 +252,8 @@ function OnboardingContent() {
         senderEmail: state.senderEmail || state.companyEmail,
         smsSenderName: state.smsSenderName || 'Bergn',
       })
+      // Clear localStorage on success (redirect happens server-side)
+      localStorage.removeItem(STORAGE_KEY)
     } catch (err) {
       dispatch({ type: 'SET_LOADING', loading: false })
       dispatch({ type: 'SET_ERROR', error: err instanceof Error ? err.message : 'Der opstod en fejl' })
@@ -289,7 +306,7 @@ function OnboardingContent() {
           {/* ── TRIN 1: Opret konto ────────── */}
           {state.step === 1 && (
             <div className="space-y-4">
-              <div><h2 className="text-xl font-bold">Opret din konto</h2><p className="text-sm text-muted-foreground">Kom i gang på under 5 minutter</p></div>
+              <div><h2 className="text-xl font-bold">Opret din konto</h2><p className="text-sm text-muted-foreground">Kom i gang på under 3 minutter</p></div>
 
               {!state.accountCreated ? (
                 <>
@@ -387,30 +404,10 @@ function OnboardingContent() {
             </div>
           )}
 
-          {/* ── TRIN 5: Priser ─────────────── */}
+          {/* ── TRIN 5: Kommunikation ──────── */}
           {state.step === 5 && (
             <div className="space-y-4">
-              <div><h2 className="text-xl font-bold">Sæt dine priser</h2><p className="text-sm text-muted-foreground">Standardpriser er udfyldt — du kan altid ændre dem senere</p></div>
-              <div className="space-y-2">
-                {Object.entries(DEFAULT_TAGRENS_PRICE_CONFIG.tagtyper).slice(0, 5).map(([name, cfg]) => (
-                  <div key={name} className="flex items-center justify-between rounded border p-2">
-                    <span className="text-sm">{name}</span>
-                    <span className="text-sm font-medium">{cfg.pris_per_kvm} kr/m²</span>
-                  </div>
-                ))}
-                <p className="text-xs text-muted-foreground">+ {Object.keys(DEFAULT_TAGRENS_PRICE_CONFIG.tagtyper).length - 5} flere tagtyper</p>
-              </div>
-              <div className="flex gap-2">
-                <Button variant="outline" onClick={prevStep}><ChevronLeft className="h-4 w-4" /></Button>
-                <Button className="flex-1" onClick={nextStep}>Fortsæt <ChevronRight className="ml-2 h-4 w-4" /></Button>
-              </div>
-            </div>
-          )}
-
-          {/* ── TRIN 6: Kommunikation ──────── */}
-          {state.step === 6 && (
-            <div className="space-y-4">
-              <div><h2 className="text-xl font-bold">Kommunikation</h2></div>
+              <div><h2 className="text-xl font-bold">Kommunikation</h2><p className="text-sm text-muted-foreground">Indstillinger for tilbuds-emails og SMS</p></div>
               <div className="space-y-2">
                 <Label>Afsender-email til tilbud</Label>
                 <Input type="email" value={state.senderEmail || state.companyEmail} onChange={(e) => set('senderEmail', e.target.value)} />
@@ -427,54 +424,57 @@ function OnboardingContent() {
             </div>
           )}
 
-          {/* ── TRIN 7: Beregner klar ──────── */}
-          {state.step === 7 && (
+          {/* ── TRIN 6: Opsummering & Start ── */}
+          {state.step === 6 && (
             <div className="space-y-4">
-              <div><h2 className="text-xl font-bold">Din beregner er klar!</h2></div>
-              <div className="space-y-2">
-                <Label>Din hosted URL</Label>
-                <div className="flex items-center gap-2 rounded-lg border bg-gray-50 px-3 py-2">
-                  <span className="text-sm font-mono">{slug}.bergn.dk</span>
-                  <ExternalLink className="h-4 w-4 text-muted-foreground" />
-                </div>
+              <div className="text-center">
+                <Rocket className="mx-auto mb-2 h-10 w-10 text-primary" />
+                <h2 className="text-xl font-bold">Alt er klar!</h2>
+                <p className="text-sm text-muted-foreground">Her er en oversigt over din opsætning</p>
               </div>
-              <div className="space-y-2">
-                <Label>Embed-kode</Label>
-                <div className="relative">
-                  <pre className="rounded-lg bg-gray-900 text-green-400 p-3 text-xs overflow-x-auto">
-{`<div id="bergn-calculator"></div>
-<script src="https://bergn.dk/embed.js"
-  data-slug="${slug}">
-</script>`}
-                  </pre>
-                  <button type="button" className="absolute top-2 right-2 rounded bg-gray-700 px-2 py-1 text-xs text-white hover:bg-gray-600"
-                    onClick={() => { navigator.clipboard.writeText(`<div id="bergn-calculator"></div>\n<script src="https://bergn.dk/embed.js" data-slug="${slug}"></script>`); setCopied(true); setTimeout(() => setCopied(false), 2000) }}>
-                    {copied ? <Check className="h-3 w-3" /> : <Copy className="h-3 w-3" />}
-                  </button>
-                </div>
-              </div>
-              <div className="flex gap-2">
-                <Button variant="outline" onClick={prevStep}><ChevronLeft className="h-4 w-4" /></Button>
-                <Button className="flex-1" onClick={nextStep}>Fortsæt <ChevronRight className="ml-2 h-4 w-4" /></Button>
-              </div>
-            </div>
-          )}
 
-          {/* ── TRIN 8: Test det ───────────── */}
-          {state.step === 8 && (
-            <div className="space-y-4">
-              <div><h2 className="text-xl font-bold">Test din beregner</h2><p className="text-sm text-muted-foreground">Tjek at alt virker korrekt</p></div>
-              <a href={`https://${slug}.bergn.dk`} target="_blank" rel="noopener noreferrer">
-                <Button variant="outline" className="w-full"><ExternalLink className="mr-2 h-4 w-4" />Åbn beregner i nyt vindue</Button>
-              </a>
-              <Separator />
-              <div className="space-y-3">
-                <div className="flex items-center gap-2"><div className="h-5 w-5 rounded border border-gray-300" /><span className="text-sm">Beregneren åbner korrekt</span></div>
-                <div className="flex items-center gap-2"><div className="h-5 w-5 rounded border border-gray-300" /><span className="text-sm">Jeg modtog en test-email</span></div>
+              <div className="space-y-2 rounded-lg border bg-gray-50 p-4 text-sm">
+                <div className="flex justify-between">
+                  <span className="text-muted-foreground">Virksomhed</span>
+                  <span className="font-medium">{state.companyName}</span>
+                </div>
+                {state.companyCvr && (
+                  <div className="flex justify-between">
+                    <span className="text-muted-foreground">CVR</span>
+                    <span className="font-medium">{state.companyCvr}</span>
+                  </div>
+                )}
+                <div className="flex justify-between">
+                  <span className="text-muted-foreground">Beregnere</span>
+                  <span className="font-medium">
+                    {state.calculatorTypes.length > 0
+                      ? state.calculatorTypes.map((t) =>
+                          CALC_TYPE_OPTIONS.find((o) => o.type === t)?.label ?? t
+                        ).join(', ')
+                      : 'Tagrens (standard)'}
+                  </span>
+                </div>
+                <div className="flex justify-between items-center">
+                  <span className="text-muted-foreground">Farve</span>
+                  <span className="flex items-center gap-2">
+                    <span className="inline-block h-4 w-4 rounded" style={{ backgroundColor: state.primaryColor }} />
+                    <span className="font-medium font-mono text-xs">{state.primaryColor}</span>
+                  </span>
+                </div>
+                <Separator />
+                <div className="flex justify-between">
+                  <span className="text-muted-foreground">Beregner-URL</span>
+                  <span className="font-medium font-mono text-xs">{slug}.bergn.dk</span>
+                </div>
               </div>
+
+              <p className="text-xs text-muted-foreground text-center">
+                Priser, beregner-link og embed-kode kan du tilpasse i admin-panelet efter oprettelse.
+              </p>
+
               <div className="flex gap-2">
                 <Button variant="outline" onClick={prevStep}><ChevronLeft className="h-4 w-4" /></Button>
-                <Button className="flex-1 text-white bg-bergn-cta" onClick={handleComplete} disabled={state.isLoading}>
+                <Button className="flex-1 text-white bg-bergn-cta hover:bg-bergn-cta-hover" onClick={handleComplete} disabled={state.isLoading}>
                   {state.isLoading ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : null}
                   Start min 14-dages prøveperiode <ChevronRight className="ml-2 h-4 w-4" />
                 </Button>
